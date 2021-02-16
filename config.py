@@ -1,0 +1,23 @@
+
+SCREEN_ROWS = 40
+SCREEN_COLS = 130
+UPPER_WALL = 4
+
+TIMEOUT = 0.1
+
+PAD_LEN = 7
+PAD_LEN_EXTENSION = 4
+PAD_LEN_SHRINK = 4
+PAD_CHAR = "T"
+PAD_VEL = 3
+
+BRICK_LEN = 5
+BRICK_CHAR = ["@", "#", "&", "+", "%"]
+BRICK_COLOR = ["green", "blue", "red", "black", "yellow"]
+
+MAX_BALL_STRENGTH = 10000
+
+POWER_VEL = 1
+FAST_BALL_VEL = 1
+POWER_CHANCES = 1
+POWER_TIMEOUT = 100
