@@ -65,7 +65,7 @@ class BallMultiplier(PowerUp):
             ball1 = copy.deepcopy(ball)
             ball1.x_velocity += 1
             ball2 = copy.deepcopy(ball)
-            ball1.x_velocity -= 1
+            ball2.x_velocity -= 1
             new_balls.append(ball1)
             new_balls.append(ball2)
         return new_balls
@@ -116,10 +116,8 @@ class PaddleGrab(PowerUp):
         self.char = "G"
 
     def power(self, paddle, balls):
-        for ball in balls:
-            ball.is_stuck = True
+        paddle.is_sticky = True
         return True
 
     def unpower(self, paddle, balls):
-        for ball in balls:
-            ball.is_stuck = False
+        paddle.is_sticky = False

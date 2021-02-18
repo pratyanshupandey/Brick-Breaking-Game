@@ -7,7 +7,9 @@ from input import get_input
 from time import time
 from brick_layouts import *
 from powerup import *
-
+import math as mt
+import termios
+import sys
 
 class Game:
     def __init__(self, bricks):
@@ -18,34 +20,55 @@ class Game:
         self.bricks = bricks
         self.grid = []
         self.is_running = True
-        self.lives = 3
+        self.quit = False
+        self.lives = LIVES
         self.score = 0
         self.last_loaded = time()
         self.start_time = time()
+
+    def start(self):
+        while self.lives > 0 and (not self.quit):
+            file = open("demofile3.txt", "a")
+            file.write("lives = {}\n".format(self.lives))
+            file.close()
+            self.loop()
+
+            self.lives -= 1
+            self.balls = [Ball()]
+            self.visible_powers = []
+            self.active_powers = []
+            self.paddle = Paddle()
+            self.is_running = True
 
     def loop(self):
         # i = 0
         while self.is_running:
             # sleep(0.1)
-            inp = get_input()
-            if inp == "a" or inp == "d":
-                self.paddle.move(inp)
-            elif inp == "x":
-                for ball in self.balls:
-                    ball.launch()
-            elif inp == "q":
-                break
-            else:
-                pass
+            inputs = get_input()
+            for inp in inputs:
+                if inp == "a" or inp == "d":
+                    self.paddle.move(inp)
+                elif inp == "x":
+                    for ball in self.balls:
+                        ball.launch()
+                elif inp == "q":
+                    self.is_running = False
+                    self.quit = True
+                else:
+                    pass
 
-            add_score, new_powers = ball_brick_collision(self.balls, self.bricks)
-            self.score += add_score
-            for power in new_powers:
-                self.visible_powers.append(power)
+            # add_score, new_powers = ball_brick_collision(self.balls, self.bricks)
+            # self.score += add_score
+            # for power in new_powers:
+            #     self.visible_powers.append(power)
 
             for ball in self.balls:
-                if not ball.move(self.paddle):
+                is_ball, add_score, new_powers = ball.move(self.paddle , self.bricks)
+                if not is_ball:
                     self.balls.remove(ball)
+                self.score += add_score
+                for power in new_powers:
+                    self.visible_powers.append(power)
 
             for power in self.visible_powers:
                 val = power.move(self.paddle)
@@ -70,8 +93,6 @@ class Game:
 
             # print(inp)
             self.create_grid()
-            while time() - self.last_loaded < TIMEOUT:
-                pass
             self.print_grid()
 
     def create_grid(self):
@@ -107,10 +128,10 @@ class Game:
 
         # Printing Balls
         for ball in self.balls:
-            file = open("demofile3.txt", "a")
-            file.write("{} {} {} {}\n".format(ball.x, ball.y, ball.x_velocity, ball.y_velocity))
-            file.close()
-            self.grid[ball.y][ball.x] = "O"
+            # file = open("demofile3.txt", "a")
+            # file.write("{} {} {} {}\n".format(ball.x, ball.y, ball.x_velocity, ball.y_velocity))
+            # file.close()
+            self.grid[round(ball.y)][round(ball.x)] = "O"
 
         # Printing Bricks
         for brick in self.bricks:
@@ -121,7 +142,7 @@ class Game:
 
         # Printing Powers
         for power in self.visible_powers:
-            self.grid[power.y][power.x] = power.char
+            self.grid[round(power.y)][round(power.x)] = power.char
 
     def print_grid(self):
         print("\x1b[{}A".format(SCREEN_ROWS + 1))
@@ -135,4 +156,10 @@ class Game:
 brick_layout = brick_layout1()
 game = Game(brick_layout)
 clear_screen()
-game.loop()
+game.start()
+
+print("Bye")
+fd = sys.stdin.fileno()
+settings = termios.tcgetattr(fd)
+settings[3] = settings[3] | termios.ECHO
+termios.tcsetattr(fd, termios.TCSADRAIN, settings)

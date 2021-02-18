@@ -4,6 +4,7 @@ import termios
 import tty
 import signal
 from config import TIMEOUT
+from time import time
 
 class Get:
     """Class to get input."""
@@ -12,6 +13,7 @@ class Get:
         """Defining __call__."""
         fd = sys.stdin.fileno()
         old_settings = termios.tcgetattr(fd)
+        old_settings[3] = old_settings[3] & ~termios.ECHO
         try:
             tty.setraw(sys.stdin.fileno())
             ch = sys.stdin.read(1)
@@ -44,5 +46,13 @@ def input_to(getch, timeout=0.1):
 
 
 def get_input():
-    return input_to(Get().__call__, TIMEOUT)
+    inputs = []
+    begin = time()
+    time_remaining = TIMEOUT - (time()-begin)
+    while time_remaining > 0:
+        inp = input_to(Get().__call__, time_remaining)
+        if  inp is not None:
+            inputs.append(inp)
+        time_remaining = TIMEOUT - (time() - begin)
+    return inputs
 

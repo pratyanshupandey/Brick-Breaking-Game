@@ -1,5 +1,4 @@
 import os
-from config import *
 from powerup import *
 import random
 from brick import ExplodingBrick
@@ -10,7 +9,7 @@ def clear_screen():
 
 
 def random_powers(brick):
-    val = random.randint(5,5)
+    val = random.randint(6,6)
     if val == 1:
         return ExpandPaddle(brick)
     elif val == 2:
@@ -146,3 +145,83 @@ def doIntersect(p1, q1, p2, q2):
 
     # If none of the cases
     return False
+
+
+def find_intersect(p,q, y):
+    if p.x == q.x:
+        return p.x
+    else:
+        val = (y - p.y) * (q.x - p.x) / (q.y - p.y) + p.x
+        return val
+
+
+# 0 = h 1 = r 2 = l
+def is_vertical(cur_ball, next_ball, brick_left, brick_right):
+    if next_ball.x == cur_ball.x:
+        return 0
+    right_wall_top = Point(brick_right.x, brick_right.y - 0.5)
+    right_wall_bottom = Point(brick_right.x, brick_right.y + 0.5)
+    if doIntersect(cur_ball, next_ball, right_wall_top, right_wall_bottom):
+        return 1
+    left_wall_top = Point(brick_left.x, brick_left.y - 0.5)
+    left_wall_bottom = Point(brick_left.x, brick_left.y + 0.5)
+    if doIntersect(cur_ball, next_ball, left_wall_top, left_wall_bottom):
+        return 2
+    return 0
+
+
+#          4
+#   ___________
+# 1 |         | 3
+#   ___________
+#       2           0 = No intersection
+
+def rect_intersection(cur_ball, next_ball, brick_left, brick_right):
+    right = False
+    left = False
+    top = False
+    bottom = False
+    right_wall_top = Point(brick_right.x, brick_right.y - 0.5)
+    right_wall_bottom = Point(brick_right.x, brick_right.y + 0.5)
+
+    left_wall_top = Point(brick_left.x, brick_left.y - 0.5)
+    left_wall_bottom = Point(brick_left.x, brick_left.y + 0.5)
+
+    left = doIntersect(cur_ball, next_ball, left_wall_top, left_wall_bottom)
+    right = doIntersect(cur_ball, next_ball, right_wall_top, right_wall_bottom)
+    top = doIntersect(cur_ball, next_ball, right_wall_top, left_wall_top)
+    bottom = doIntersect(cur_ball, next_ball, left_wall_bottom, right_wall_bottom)
+
+    if left and cur_ball.x < brick_left.x:
+        return 1
+    if right and cur_ball.x > brick_right.x:
+        return 3
+    if top and cur_ball.y < left_wall_top.y:
+        return 4
+    if bottom and cur_ball.y > left_wall_bottom.y:
+        return 2
+    return 0
+
+def distance(x1,y1,x2,y2):
+    val = (x2 - x1)**2 + (y2 - y1)**2
+    return val
+
+# def sort_bricks(collided_bricks, cur_ball):
+#     ret_brick = collided_bricks[0]
+#     for brick in collided_bricks:
+#         if distance(cur_ball.x, cur_ball.y, brick.x, brick.y) < distance(cur_ball.x, cur_ball.y, ret_brick.x, ret_brick.y):
+#             ret_brick = brick
+#     return ret_brick
+
+def y_sort(brick):
+    return brick.y
+
+
+def x_sort(brick):
+    return brick.x
+
+
+def sort_bricks(collided_bricks, cur_ball):
+    collided_bricks.sort(reverse=(cur_ball.y_velocity < 0), key=y_sort)
+    collided_bricks.sort(reverse=(cur_ball.x_velocity < 0), key=x_sort)
+    return collided_bricks[0]

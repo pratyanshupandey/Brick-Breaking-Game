@@ -5,7 +5,7 @@ class Paddle:
         self.x = SCREEN_COLS // 2
         self.y = SCREEN_ROWS - 3
         self.length = PAD_LEN
-
+        self.is_sticky = False
     def move(self, inp):
         if inp == "a" and ((self.x - self.length//2) > 1):
             self.x -= PAD_VEL
