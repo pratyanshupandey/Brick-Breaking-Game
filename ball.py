@@ -11,15 +11,16 @@ class Ball:
         self.x_velocity = self.offset * BALL_VEL
         self.y_velocity = -1 * BALL_VEL
         self.strength = 1
-        self.x = 94
-        self.y = 15
-        self.x_velocity = -5
+        self.x = 33
+        self.y = 34
+        self.x_velocity = 0
         self.y_velocity = 1
 
     def move(self, paddle, bricks):
         ret_val = True
         score = 0
         new_powers = []
+        is_paddle_col = False
 
         file = open("demofile3.txt", "a")
         if self.is_stuck:
@@ -27,38 +28,56 @@ class Ball:
 
         else:
             collision = True
-            while collision:
+            cur_ball = Point(self.x, self.y)
+            next_ball = Point(self.x + self.x_velocity, self.y + self.y_velocity)
+            i = 0
+            while collision and i < 10:
                 collision = False
-                cur_ball = Point(self.x, self.y)
-                next_ball = Point(self.x + self.x_velocity, self.y + self.y_velocity)
-
-
+                i += 1
                 # Collision with paddle
-                paddle_left = Point(paddle.x - paddle.length // 2, paddle.y)
-                paddle_right = Point(paddle.x + paddle.length // 2, paddle.y)
-                if doIntersect(cur_ball, next_ball, paddle_left, paddle_right) and self.y != paddle.y:
+                paddle_left = Point(paddle.x - paddle.length // 2 - 0.5, paddle.y - 0.5)
+                paddle_right = Point(paddle.x + paddle.length // 2 + 0.5, paddle.y - 0.5)
+                if doIntersect(cur_ball, next_ball, paddle_left, paddle_right) and cur_ball.y != paddle_left.y:
+                    file.write("before coll = {} {} {} {} {} {}\n".format(cur_ball.x, cur_ball.y, next_ball.x, next_ball.y, paddle.x, paddle.y))
+                    is_paddle_col  = True
                     collision = True
+
+                    # file.write("intersect = {} {} {} paddle = {}\n".format(find_intersect_y(cur_ball, next_ball, paddle_left.y), next_ball.x, next_ball.y, paddle.x))
+                    intersect = find_intersect_y(cur_ball, next_ball, paddle.y)
+                    self.offset = (intersect - paddle.x) * OFFSET_INCREASE
+
                     if paddle.is_sticky:
                         self.is_stuck = True
-                        self.h_reflection(paddle.y, next_ball)
+                        self.h_reflection(paddle_left.y, next_ball)
                     else:
-                        self.h_reflection(paddle.y, next_ball)
-                    file.write("intersect = {} {} {}\n".format(find_intersect(cur_ball, next_ball, paddle.y), next_ball.x, next_ball.y))
-                    self.offset = (find_intersect(cur_ball, next_ball, paddle.y) - paddle.x) * OFFSET_INCREASE
+                        self.h_reflection(paddle_left.y, next_ball)
+                    # file.write("after coll = {} {} {} {}\n".format(next_ball.x, next_ball.y, paddle.x, paddle.y))
+                    file.write("OFFSET = {}\n".format(self.offset))
                     self.x_velocity += self.offset * BALL_VEL
 
+                    cur_ball.x = intersect
+                    cur_ball.y = paddle_right.y
+                    file.write("after coll = {} {} {} {} {} {}\n".format(cur_ball.x, cur_ball.y, next_ball.x, next_ball.y, paddle.x, paddle.y))
+
+
                 # Collision with walls
-                if next_ball.x <= 0:
+                if next_ball.x <= 0.5:
                     collision = True
-                    self.v_reflection(0, next_ball)
+                    self.v_reflection(0.5, next_ball)
+                    cur_ball.x = 0.5
+                    cur_ball.y = find_intersect_x(cur_ball,next_ball,cur_ball.x)
 
-                if next_ball.x >= SCREEN_COLS - 1:
+                if next_ball.x >= SCREEN_COLS - 1.5:
                     collision = True
-                    self.v_reflection(SCREEN_COLS - 1, next_ball)
+                    self.v_reflection(SCREEN_COLS - 1.5, next_ball)
+                    cur_ball.x = SCREEN_COLS - 1.5
+                    cur_ball.y = find_intersect_x(cur_ball, next_ball, cur_ball.x)
 
-                if next_ball.y <= UPPER_WALL:
+                if next_ball.y <= UPPER_WALL + 0.5:
                     collision = True
-                    self.h_reflection(UPPER_WALL, next_ball)
+                    self.h_reflection(UPPER_WALL + 0.5, next_ball)
+                    cur_ball.y = UPPER_WALL + 0.5
+                    cur_ball.x = find_intersect_y(cur_ball, next_ball, cur_ball.y)
 
                 if next_ball.y >= SCREEN_ROWS - 1:
                     ret_val = False
@@ -66,6 +85,7 @@ class Ball:
 
                 # Collision with bricks
                 collided_bricks = []
+                # file.write("before brick coll = {} {} {} {}\n".format(next_ball.x, next_ball.y, cur_ball.x, cur_ball.y))
                 for brick in bricks:
                     brick_left = Point(brick.x - brick.length // 2 - 0.5, brick.y)
                     brick_right = Point(brick.x + brick.length // 2 + 0.5, brick.y)
@@ -74,6 +94,7 @@ class Ball:
                     if val != 0:
                         collision = True
                         collided_bricks.append(brick)
+                        # file.write("Col Brick char = {} {} {}\n".format(brick.char , brick.x, brick.y))
 
                 if len(collided_bricks) != 0:
                     brick = sort_bricks(collided_bricks, self)
@@ -95,14 +116,25 @@ class Ball:
                     else:
                         if val == 1:
                             self.v_reflection(brick_left.x, next_ball)
+                            cur_ball.x = brick_left.x
+                            cur_ball.y = find_intersect_x(cur_ball, next_ball, cur_ball.x)
+
                         elif val == 2:
                             self.h_reflection(brick.y + 0.5, next_ball)
+                            cur_ball.y = brick.y + 0.5
+                            cur_ball.x = find_intersect_y(cur_ball, next_ball, cur_ball.y)
                         elif val == 3:
                             self.v_reflection(brick_right.x, next_ball)
+                            cur_ball.x = brick_right.x
+                            cur_ball.y = find_intersect_x(cur_ball, next_ball, cur_ball.x)
                         elif val == 4:
                             self.h_reflection(brick.y - 0.5, next_ball)
+                            cur_ball.y = brick.y - 0.5
+                            cur_ball.x = find_intersect_y(cur_ball, next_ball, cur_ball.y)
                         else:
                             pass
+                        # file.write("after brick coll = {} {} {} {}\n".format(next_ball.x, next_ball.y, cur_ball.x,
+                        #                                                           cur_ball.y))
 
                             # col = is_vertical(cur_ball, next_ball, brick_left, brick_right) # 0 = h 1 = r 2 = l
                             # file.write("col = {}\n".format(col))
@@ -147,12 +179,13 @@ class Ball:
                 #     self.y_velocity = -1 * self.y_velocity
                 #     self.x_velocity += next_x - paddle.x
 
-                self.x = next_ball.x
-                self.y = next_ball.y
+            self.x = next_ball.x
+            self.y = next_ball.y
 
         file.write("{} {} {} {}\n".format(self.x, self.y, self.x_velocity, self.y_velocity))
         file.close()
-
+        # if is_paddle_col:
+        #     self.x_velocity += self.offset * BALL_VEL
         return ret_val, score, new_powers
 
     def launch(self):

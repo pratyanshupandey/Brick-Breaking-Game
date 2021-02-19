@@ -146,13 +146,24 @@ def doIntersect(p1, q1, p2, q2):
     # If none of the cases
     return False
 
-
-def find_intersect(p,q, y):
+# pq line with y = y
+def find_intersect_y(p,q, y):
     if p.x == q.x:
         return p.x
     else:
         val = (y - p.y) * (q.x - p.x) / (q.y - p.y) + p.x
         return val
+
+# pq line with x = x
+def find_intersect_x(p,q, x):
+    if p.y == q.y:
+        return p.y
+    elif p.x == q.x:
+        return (p.y + q.y) / 2
+    else:
+        val = p.y + (q.y - p.y)*(x - p.x)/(q.x - p.x)
+        return val
+
 
 
 # 0 = h 1 = r 2 = l

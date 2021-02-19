@@ -3,6 +3,7 @@ from config import *
 class Paddle:
     def __init__(self):
         self.x = SCREEN_COLS // 2
+        # self.x = 33
         self.y = SCREEN_ROWS - 3
         self.length = PAD_LEN
         self.is_sticky = False

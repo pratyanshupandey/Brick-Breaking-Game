@@ -76,6 +76,11 @@ class Game:
                     if isinstance(power, BallMultiplier):
                         self.balls = power.power(self.paddle, self.balls)
                     elif power.power(self.paddle, self.balls):
+                        if isinstance(power, PaddleGrab) and self.paddle.is_sticky:
+                            for i in range(len(self.active_powers)):
+                                if isinstance(self.active_powers[i][1], PaddleGrab):
+                                    self.active_powers.remove(self.active_powers[i])
+                                    break
                         self.active_powers.append((time(), power))
                     self.visible_powers.remove(power)
                 elif val == -1:
@@ -88,7 +93,7 @@ class Game:
                     power.unpower(self.paddle, self.balls)
                     self.active_powers.remove((start_time,power))
 
-            if len(self.balls) == 0 or len(self.bricks) == 0:
+            if len(self.balls) == 0:# or len(self.bricks) == 0:
                 self.is_running = False
 
             # print(inp)
@@ -152,14 +157,16 @@ class Game:
             print()
         self.last_loaded = time()
 
+try:
+    brick_layout = brick_layout1()
+    game = Game(brick_layout)
+    clear_screen()
+    game.start()
 
-brick_layout = brick_layout1()
-game = Game(brick_layout)
-clear_screen()
-game.start()
+    print("Bye")
 
-print("Bye")
-fd = sys.stdin.fileno()
-settings = termios.tcgetattr(fd)
-settings[3] = settings[3] | termios.ECHO
-termios.tcsetattr(fd, termios.TCSADRAIN, settings)
+finally:
+    fd = sys.stdin.fileno()
+    settings = termios.tcgetattr(fd)
+    settings[3] = settings[3] | termios.ECHO
+    termios.tcsetattr(fd, termios.TCSADRAIN, settings)
