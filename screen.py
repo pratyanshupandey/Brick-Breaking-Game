@@ -1,5 +1,3 @@
-from time import sleep
-from config import *
 from paddle import Paddle
 from ball import Ball
 from utils import *
@@ -7,10 +5,11 @@ from input import get_input
 from time import time
 from brick_layouts import *
 from powerup import *
-import math as mt
 import termios
 import sys
-from colorama import init, deinit
+from colorama import init, deinit, Style
+
+
 class Game:
     def __init__(self, bricks):
         self.paddle = Paddle()
@@ -23,16 +22,11 @@ class Game:
         self.quit = False
         self.lives = LIVES
         self.score = 0
-        self.last_loaded = time()
         self.start_time = time()
 
     def start(self):
         while self.lives > 0 and (not self.quit):
-            file = open("demofile3.txt", "a")
-            file.write("lives = {}\n".format(self.lives))
-            file.close()
             self.loop()
-
             self.lives -= 1
             self.balls = [Ball()]
             self.visible_powers = []
@@ -40,10 +34,12 @@ class Game:
             self.paddle = Paddle()
             self.is_running = True
 
+        return self.score, int(time() - self.start_time)
+
     def loop(self):
-        # i = 0
+
+        # Taking Input
         while self.is_running:
-            # sleep(0.1)
             inputs = get_input()
             for inp in inputs:
                 if inp == "a" or inp == "d":
@@ -57,19 +53,16 @@ class Game:
                 else:
                     pass
 
-            # add_score, new_powers = ball_brick_collision(self.balls, self.bricks)
-            # self.score += add_score
-            # for power in new_powers:
-            #     self.visible_powers.append(power)
-
+            # Moving Balls, Checking Collisions and Creating Powerups
             for ball in self.balls:
-                is_ball, add_score, new_powers = ball.move(self.paddle , self.bricks)
+                is_ball, add_score, new_powers = ball.move(self.paddle, self.bricks)
                 if not is_ball:
                     self.balls.remove(ball)
                 self.score += add_score
                 for power in new_powers:
                     self.visible_powers.append(power)
 
+            # Managing Powers
             for power in self.visible_powers:
                 val = power.move(self.paddle)
                 if val == 1:
@@ -89,14 +82,13 @@ class Game:
                     pass
 
             for start_time, power in self.active_powers:
-                if time()-start_time >= POWER_TIMEOUT:
+                if time() - start_time >= POWER_TIMEOUT:
                     power.unpower(self.paddle, self.balls)
-                    self.active_powers.remove((start_time,power))
+                    self.active_powers.remove((start_time, power))
 
-            if len(self.balls) == 0:# or len(self.bricks) == 0:
+            if len(self.balls) == 0 or len(self.bricks) == 0:
                 self.is_running = False
 
-            # print(inp)
             self.create_grid()
             self.print_grid()
 
@@ -120,11 +112,8 @@ class Game:
         self.grid[0][0] = self.grid[0][-1] = SCREEN_BORDER + " "
 
         # Printing Score and Lives
-        # self.grid[2] = DATA_COLOR + "|\tSCORE = {} \t \t TIME = {} \t \t LIVES = {}".format(self.score, int(time() - self.start_time), self.lives)
-        # self.grid[3] = DATA_COLOR + "|\tPOWERUPS = "
-        # for tim, power in self.active_powers:
-        #     self.grid[3] += "{}({}) ".format( power.__class__.__name__ ,POWER_TIMEOUT - int(time() - tim))
-        self.grid[2], self.grid[3] = get_score_grid(self.score, int(time() - self.start_time), self.lives, self.active_powers, time())
+        self.grid[2], self.grid[3] = get_score_grid(self.score, int(time() - self.start_time), self.lives,
+                                                    self.active_powers, time())
 
         # Printing Paddle
         paddle_left = self.paddle.x - self.paddle.length // 2
@@ -155,19 +144,26 @@ class Game:
             print()
         self.last_loaded = time()
 
-try:
-    init()
-    brick_layout = brick_layout1()
-    game = Game(brick_layout)
-    clear_screen()
-    game.start()
 
-    print("Bye")
+def run_game():
+    score = None
+    tim = None
+    try:
+        init()
+        brick_layout = brick_layout1()
+        game = Game(brick_layout)
+        clear_screen()
+        score, tim = game.start()
 
-finally:
-    fd = sys.stdin.fileno()
-    settings = termios.tcgetattr(fd)
-    settings[3] = settings[3] | termios.ECHO
-    termios.tcsetattr(fd, termios.TCSADRAIN, settings)
-    deinit()
-
+    finally:
+        fd = sys.stdin.fileno()
+        settings = termios.tcgetattr(fd)
+        settings[3] = settings[3] | termios.ECHO
+        termios.tcsetattr(fd, termios.TCSADRAIN, settings)
+        print(Style.RESET_ALL)
+        deinit()
+        if score is not None and tim is not None:
+            print("\n\n\n\n\n\n")
+            print("\t\tTotal Score = {}".format(score))
+            print("\t\tTotal Time = {}".format(tim))
+            print("\n\n\n\n\n\n")

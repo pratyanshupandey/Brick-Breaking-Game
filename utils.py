@@ -1,15 +1,21 @@
 import os
 from powerup import *
 import random
-from brick import ExplodingBrick
 
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
+# Class for creating a point object for purpose of collision detection
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+
 def random_powers(brick):
-    val = random.randint(5,5)
+    val = random.randint(5, 5)
     if val == 1:
         return ExpandPaddle(brick)
     elif val == 2:
@@ -23,69 +29,6 @@ def random_powers(brick):
     else:
         return PaddleGrab(brick)
 
-
-def ball_brick_collision(balls, bricks):
-    score = 0
-    for ball in balls:
-        next_y = ball.y + ball.y_velocity
-        next_x = ball.x + ball.x_velocity
-        for brick in bricks:
-            if next_y == brick.y and (brick.x - brick.length // 2) <= next_x <= (brick.x + brick.length // 2):
-                brick.strength -= ball.strength
-                if brick.strength <= 0:
-                    pass
-                else:
-                    if brick.strength >= 4:
-                        pass
-                    else:
-                        brick.char = BRICK_CHAR[brick.strength - 1]
-                        brick.color = BRICK_COLOR[brick.strength - 1]
-
-                if ball.strength == MAX_BALL_STRENGTH:
-                    pass
-                else:
-                    if next_x == (brick.x - brick.length // 2):
-                        if ball.x < next_x:
-                            ball.v_reflection()
-                        else:
-                            ball.h_reflection()
-
-                    elif next_x == (brick.x + brick.length // 2):
-                        if ball.x > next_x:
-                            ball.v_reflection()
-                        else:
-                            ball.h_reflection()
-                    else:
-                        ball.h_reflection()
-                    break
-
-    new_powers = []
-    # for i in range(len(bricks)):
-    #     brick = bricks[i]
-    no_exploding_brick = True
-    while no_exploding_brick:
-        no_exploding_brick=False
-        for brick in bricks:
-            if brick.strength <= 0:
-                score += brick.break_score
-                if random.randint(1, POWER_CHANCES) == 1:
-                    new_powers.append(random_powers(brick))
-                if isinstance(brick, ExplodingBrick):
-                    no_exploding_brick=  True
-                    for j in range(len(bricks)):
-                        if bricks[j].strength != 0 and abs(brick.y - bricks[j].y) <= 1 and abs(brick.x - bricks[j].x) == BRICK_LEN:
-                            bricks[j].strength = 0
-                bricks.remove(brick)
-
-
-    return score, new_powers
-
-
-class Point:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
     # Given three colinear points p, q, r, the function checks if
 
 
@@ -98,7 +41,6 @@ def onSegment(p, q, r):
 
 
 def orientation(p, q, r):
-
     val = (float(q.y - p.y) * (r.x - q.x)) - (float(q.x - p.x) * (r.y - q.y))
     if val > 0:
         # Clockwise orientation
@@ -146,24 +88,25 @@ def doIntersect(p1, q1, p2, q2):
     # If none of the cases
     return False
 
+
 # pq line with y = y
-def find_intersect_y(p,q, y):
+def find_intersect_y(p, q, y):
     if p.x == q.x:
         return p.x
     else:
         val = (y - p.y) * (q.x - p.x) / (q.y - p.y) + p.x
         return val
 
+
 # pq line with x = x
-def find_intersect_x(p,q, x):
+def find_intersect_x(p, q, x):
     if p.y == q.y:
         return p.y
     elif p.x == q.x:
         return (p.y + q.y) / 2
     else:
-        val = p.y + (q.y - p.y)*(x - p.x)/(q.x - p.x)
+        val = p.y + (q.y - p.y) * (x - p.x) / (q.x - p.x)
         return val
-
 
 
 # 0 = h 1 = r 2 = l
@@ -188,10 +131,6 @@ def is_vertical(cur_ball, next_ball, brick_left, brick_right):
 #       2           0 = No intersection
 
 def rect_intersection(cur_ball, next_ball, brick_left, brick_right):
-    right = False
-    left = False
-    top = False
-    bottom = False
     right_wall_top = Point(brick_right.x, brick_right.y - 0.5)
     right_wall_bottom = Point(brick_right.x, brick_right.y + 0.5)
 
@@ -213,9 +152,11 @@ def rect_intersection(cur_ball, next_ball, brick_left, brick_right):
         return 2
     return 0
 
-def distance(x1,y1,x2,y2):
-    val = (x2 - x1)**2 + (y2 - y1)**2
+
+def distance(x1, y1, x2, y2):
+    val = (x2 - x1) ** 2 + (y2 - y1) ** 2
     return val
+
 
 # def sort_bricks(collided_bricks, cur_ball):
 #     ret_brick = collided_bricks[0]
@@ -237,10 +178,11 @@ def sort_bricks(collided_bricks, cur_ball):
     collided_bricks.sort(reverse=(cur_ball.x_velocity < 0), key=x_sort)
     return collided_bricks[0]
 
+
 def get_score_grid(score, time, lives, powers, cur_time):
     score_line = []
     score_line.append(SCREEN_BORDER + "|")
-    score_str = "  SCORE = {}   TIME = {}   LIVES = {}".format(score,time,lives)
+    score_str = "  SCORE = {}   TIME = {}   LIVES = {}".format(score, time, lives)
     for i in range(SCREEN_COLS - 2 - len(score_str)):
         score_str += " "
     score_line.append(SCREEN_BG + score_str)
