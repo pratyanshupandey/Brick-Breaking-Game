@@ -9,7 +9,7 @@ def clear_screen():
 
 
 def random_powers(brick):
-    val = random.randint(6,6)
+    val = random.randint(5,5)
     if val == 1:
         return ExpandPaddle(brick)
     elif val == 2:
@@ -236,3 +236,24 @@ def sort_bricks(collided_bricks, cur_ball):
     collided_bricks.sort(reverse=(cur_ball.y_velocity < 0), key=y_sort)
     collided_bricks.sort(reverse=(cur_ball.x_velocity < 0), key=x_sort)
     return collided_bricks[0]
+
+def get_score_grid(score, time, lives, powers, cur_time):
+    score_line = []
+    score_line.append(SCREEN_BORDER + "|")
+    score_str = "  SCORE = {}   TIME = {}   LIVES = {}".format(score,time,lives)
+    for i in range(SCREEN_COLS - 2 - len(score_str)):
+        score_str += " "
+    score_line.append(SCREEN_BG + score_str)
+    score_line.append(SCREEN_BORDER + "|")
+
+    power_line = []
+    power_line.append(SCREEN_BORDER + "|")
+    power_str = "  POWERUPS = "
+    for tim, power in powers:
+        power_str += ("{}({}) ".format(power.__class__.__name__, POWER_TIMEOUT - int(cur_time - tim)))
+    for i in range(SCREEN_COLS - 2 - len(power_str)):
+        power_str += " "
+    power_line.append(DATA_COLOR + power_str)
+    power_line.append(SCREEN_BORDER + "|")
+
+    return score_line, power_line

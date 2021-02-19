@@ -10,7 +10,7 @@ from powerup import *
 import math as mt
 import termios
 import sys
-
+from colorama import init, deinit
 class Game:
     def __init__(self, bricks):
         self.paddle = Paddle()
@@ -105,49 +105,47 @@ class Game:
         for i in range(SCREEN_ROWS):
             self.grid.append([])
             for j in range(SCREEN_COLS):
-                self.grid[i].append(" ")
+                self.grid[i].append(SCREEN_BG + " ")
 
         # Screen Box
         for i in range(SCREEN_COLS):
-            self.grid[0][i] = "_"
-            self.grid[-1][i] = "_"
-            self.grid[UPPER_WALL][i] = "_"
+            self.grid[0][i] = SCREEN_BORDER + "_"
+            self.grid[-1][i] = SCREEN_BORDER + "_"
+            self.grid[UPPER_WALL][i] = SCREEN_BORDER + "_"
 
         for i in range(SCREEN_ROWS):
-            self.grid[i][0] = "|"
-            self.grid[i][-1] = "|"
+            self.grid[i][0] = SCREEN_BORDER + "|"
+            self.grid[i][-1] = SCREEN_BORDER + "|"
 
-        self.grid[0][0] = self.grid[0][-1] = " "
+        self.grid[0][0] = self.grid[0][-1] = SCREEN_BORDER + " "
 
         # Printing Score and Lives
-        self.grid[2] = "|\tSCORE = {} \t \t TIME = {} \t \t LIVES = {}".format(self.score, int(time() - self.start_time), self.lives)
-        self.grid[3] = "|\tPOWERUPS = "
-        for tim, power in self.active_powers:
-            self.grid[3] += "{}({}) ".format( power.__class__.__name__ ,POWER_TIMEOUT - int(time() - tim))
+        # self.grid[2] = DATA_COLOR + "|\tSCORE = {} \t \t TIME = {} \t \t LIVES = {}".format(self.score, int(time() - self.start_time), self.lives)
+        # self.grid[3] = DATA_COLOR + "|\tPOWERUPS = "
+        # for tim, power in self.active_powers:
+        #     self.grid[3] += "{}({}) ".format( power.__class__.__name__ ,POWER_TIMEOUT - int(time() - tim))
+        self.grid[2], self.grid[3] = get_score_grid(self.score, int(time() - self.start_time), self.lives, self.active_powers, time())
 
         # Printing Paddle
         paddle_left = self.paddle.x - self.paddle.length // 2
         paddle_right = self.paddle.x + self.paddle.length // 2
         for i in range(paddle_left, paddle_right + 1):
-            self.grid[self.paddle.y][i] = PAD_CHAR
+            self.grid[self.paddle.y][i] = PADDLE_COLOR + PAD_CHAR
 
         # Printing Balls
         for ball in self.balls:
-            # file = open("demofile3.txt", "a")
-            # file.write("{} {} {} {}\n".format(ball.x, ball.y, ball.x_velocity, ball.y_velocity))
-            # file.close()
-            self.grid[round(ball.y)][round(ball.x)] = "O"
+            self.grid[round(ball.y)][round(ball.x)] = BALL_COLOR + BALL_CHAR
 
         # Printing Bricks
         for brick in self.bricks:
             brick_left = brick.x - brick.length // 2
             brick_right = brick.x + brick.length // 2
             for i in range(brick_left, brick_right + 1):
-                self.grid[brick.y][i] = brick.char
+                self.grid[brick.y][i] = brick.color + brick.char
 
         # Printing Powers
         for power in self.visible_powers:
-            self.grid[round(power.y)][round(power.x)] = power.char
+            self.grid[round(power.y)][round(power.x)] = power.color + power.char
 
     def print_grid(self):
         print("\x1b[{}A".format(SCREEN_ROWS + 1))
@@ -158,6 +156,7 @@ class Game:
         self.last_loaded = time()
 
 try:
+    init()
     brick_layout = brick_layout1()
     game = Game(brick_layout)
     clear_screen()
@@ -170,3 +169,5 @@ finally:
     settings = termios.tcgetattr(fd)
     settings[3] = settings[3] | termios.ECHO
     termios.tcsetattr(fd, termios.TCSADRAIN, settings)
+    deinit()
+

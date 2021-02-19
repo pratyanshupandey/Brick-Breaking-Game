@@ -1,4 +1,11 @@
+from colorama import Fore, Back, Style
 
+SCREEN_BG = Back.WHITE
+SCREEN_BORDER = Back.BLACK + Fore.BLACK
+DATA_COLOR = Back.WHITE + Fore.BLACK
+PADDLE_COLOR = Back.GREEN + Fore.GREEN
+BALL_COLOR = Back.WHITE + Fore.RED
+BALL_CHAR = "O"
 SCREEN_ROWS = 40
 SCREEN_COLS = 130
 UPPER_WALL = 4
@@ -19,14 +26,27 @@ PAD_VEL = 1
 
 BRICK_LEN = 5
 BRICK_CHAR = ["@", "#", "&", "+", "%"]
-BRICK_COLOR = ["green", "blue", "red", "black", "yellow"]
+# BRICK_COLOR = ["green", "blue", "red", "black", "yellow"]
+BRICK_COLOR = [Back.GREEN + Fore.GREEN,
+               Back.BLUE + Fore.BLUE,
+               Back.RED + Fore.RED,
+               Back.BLACK + Fore.BLACK,
+               Back.YELLOW + Fore.YELLOW]
 
 MAX_BALL_STRENGTH = 10000
 
 POWER_VEL = 0.5
 FAST_BALL_VEL = 1 * BALL_VEL
 POWER_CHANCES = 1
-POWER_TIMEOUT = 10
+POWER_TIMEOUT = 13
+POWER_COLOR = {
+    'ExpandPaddle': Back.RED + Fore.YELLOW,
+    'ShrinkPaddle': Back.RED + Fore.YELLOW,
+    'BallMultiplier': Back.RED + Fore.YELLOW,
+    'FastBall': Back.RED + Fore.YELLOW,
+    'ThruBall': Back.RED + Fore.YELLOW,
+    'PaddleGrab': Back.RED + Fore.YELLOW
+}
 
 # file = open("demofile3.txt", "a")
 # file.write("{} {} {} {}\n".format(ball.x, ball.y, ball.x_velocity, ball.y_velocity))

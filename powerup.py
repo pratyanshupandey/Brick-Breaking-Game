@@ -28,6 +28,7 @@ class ExpandPaddle(PowerUp):
     def __init__(self, brick):
         super().__init__(brick)
         self.char = "E"
+        self.color = POWER_COLOR['ExpandPaddle']
 
     def power(self, paddle, balls):
         paddle.length += PAD_LEN_EXTENSION
@@ -42,6 +43,7 @@ class ShrinkPaddle(PowerUp):
     def __init__(self, brick):
         super().__init__(brick)
         self.char = "S"
+        self.color = POWER_COLOR['ShrinkPaddle']
 
     def power(self, paddle, balls):
         if paddle.length > 3:
@@ -58,6 +60,7 @@ class BallMultiplier(PowerUp):
     def __init__(self, brick):
         super().__init__(brick)
         self.char = "M"
+        self.color = POWER_COLOR['BallMultiplier']
 
     def power(self, paddle, balls):
         new_balls = []
@@ -76,6 +79,8 @@ class FastBall(PowerUp):
     def __init__(self, brick):
         super().__init__(brick)
         self.char = "F"
+        self.color = POWER_COLOR['FastBall']
+
 
     def power(self, paddle, balls):
         for ball in balls:
@@ -98,6 +103,7 @@ class ThruBall(PowerUp):
     def __init__(self, brick):
         super().__init__(brick)
         self.char = "T"
+        self.color = POWER_COLOR['ThruBall']
 
     def power(self, paddle, balls):
         for ball in balls:
@@ -114,6 +120,8 @@ class PaddleGrab(PowerUp):
     def __init__(self, brick):
         super().__init__(brick)
         self.char = "G"
+        self.color = POWER_COLOR['PaddleGrab']
+
 
     def power(self, paddle, balls):
         paddle.is_sticky = True
