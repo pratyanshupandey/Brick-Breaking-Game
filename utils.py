@@ -15,7 +15,7 @@ class Point:
 
 
 def random_powers(brick):
-    val = random.randint(5, 5)
+    val = random.randint(1, 6)
     if val == 1:
         return ExpandPaddle(brick)
     elif val == 2:
@@ -29,9 +29,7 @@ def random_powers(brick):
     else:
         return PaddleGrab(brick)
 
-    # Given three colinear points p, q, r, the function checks if
-
-
+# Given three colinear points p, q, r, the function checks if
 # point q lies on line segment 'pr'
 def onSegment(p, q, r):
     if ((q.x <= max(p.x, r.x)) and (q.x >= min(p.x, r.x)) and

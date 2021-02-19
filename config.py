@@ -40,8 +40,8 @@ BRICK_COLOR = [Back.GREEN + Fore.GREEN,
 # Powers Info
 POWER_VEL = 0.5
 FAST_BALL_VEL = 1 * BALL_VEL
-POWER_CHANCES = 1
-POWER_TIMEOUT = 13
+POWER_CHANCES = 3
+POWER_TIMEOUT = 10
 POWER_COLOR = {
     'ExpandPaddle': Back.RED + Fore.YELLOW,
     'ShrinkPaddle': Back.RED + Fore.YELLOW,
