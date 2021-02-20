@@ -8,7 +8,7 @@ class Ball:
         self.x = SCREEN_COLS // 2
         self.y = SCREEN_ROWS - 1 - PAD_VER_OFF
         self.is_stuck = True
-        self.offset = random.randint(-1 * (PAD_LEN // 2), PAD_LEN // 2)
+        self.offset = int(random.randint(-1 * (PAD_LEN // 2), PAD_LEN // 2) * OFFSET_INCREASE)
         self.x_velocity = self.offset * BALL_VEL
         self.y_velocity = -1 * BALL_VEL
         self.strength = 1
