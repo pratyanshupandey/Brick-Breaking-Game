@@ -1,5 +1,5 @@
-from utils import *
-from brick import ExplodingBrick
+from point import *
+from brick import *
 
 
 class Ball:
@@ -34,9 +34,9 @@ class Ball:
                 paddle_left = Point(paddle.x - paddle.length // 2 - 0.5, paddle.y - 0.5)
                 paddle_right = Point(paddle.x + paddle.length // 2 + 0.5, paddle.y - 0.5)
 
-                if is_intersecting(cur_ball, next_ball, paddle_left, paddle_right) and cur_ball.y != paddle_left.y:
+                if Point.is_intersecting(cur_ball, next_ball, paddle_left, paddle_right) and cur_ball.y != paddle_left.y:
                     collision = True
-                    intersect = find_intersect_y(cur_ball, next_ball, paddle.y)
+                    intersect = Point.find_intersect_y(cur_ball, next_ball, paddle.y)
                     self.offset = int((intersect - paddle.x) * OFFSET_INCREASE)
 
                     if paddle.is_sticky:
@@ -55,19 +55,19 @@ class Ball:
                     collision = True
                     self.v_reflection(0.5, next_ball)
                     cur_ball.x = 0.5
-                    cur_ball.y = find_intersect_x(cur_ball, next_ball, cur_ball.x)
+                    cur_ball.y = Point.find_intersect_x(cur_ball, next_ball, cur_ball.x)
 
                 if next_ball.x >= SCREEN_COLS - 1.5:
                     collision = True
                     self.v_reflection(SCREEN_COLS - 1.5, next_ball)
                     cur_ball.x = SCREEN_COLS - 1.5
-                    cur_ball.y = find_intersect_x(cur_ball, next_ball, cur_ball.x)
+                    cur_ball.y = Point.find_intersect_x(cur_ball, next_ball, cur_ball.x)
 
                 if next_ball.y <= UPPER_WALL + 0.5:
                     collision = True
                     self.h_reflection(UPPER_WALL + 0.5, next_ball)
                     cur_ball.y = UPPER_WALL + 0.5
-                    cur_ball.x = find_intersect_y(cur_ball, next_ball, cur_ball.y)
+                    cur_ball.x = Point.find_intersect_y(cur_ball, next_ball, cur_ball.y)
 
                 if next_ball.y >= SCREEN_ROWS - 1:
                     ret_val = False
@@ -77,17 +77,17 @@ class Ball:
                 for brick in bricks:
                     brick_left = Point(brick.x - brick.length // 2 - 0.5, brick.y)
                     brick_right = Point(brick.x + brick.length // 2 + 0.5, brick.y)
-                    val = rect_intersection(cur_ball, next_ball, brick_left, brick_right)
+                    val = Point.rect_intersection(cur_ball, next_ball, brick_left, brick_right)
 
                     if val != 0:
                         collision = True
                         collided_bricks.append(brick)
 
                 if len(collided_bricks) != 0:
-                    brick = sort_bricks(collided_bricks, self)
+                    brick = Brick.sort_bricks(collided_bricks, self)
                     brick_left = Point(brick.x - brick.length // 2 - 0.5, brick.y)
                     brick_right = Point(brick.x + brick.length // 2 + 0.5, brick.y)
-                    val = rect_intersection(cur_ball, next_ball, brick_left, brick_right)
+                    val = Point.rect_intersection(cur_ball, next_ball, brick_left, brick_right)
                     brick.strength -= self.strength
 
                     if brick.strength <= 0:
@@ -107,27 +107,27 @@ class Ball:
                         if val == 1:
                             self.v_reflection(brick_left.x, next_ball)
                             cur_ball.x = brick_left.x
-                            cur_ball.y = find_intersect_x(cur_ball, next_ball, cur_ball.x)
+                            cur_ball.y = Point.find_intersect_x(cur_ball, next_ball, cur_ball.x)
 
                         elif val == 2:
                             self.h_reflection(brick.y + 0.5, next_ball)
                             cur_ball.y = brick.y + 0.5
-                            cur_ball.x = find_intersect_y(cur_ball, next_ball, cur_ball.y)
+                            cur_ball.x = Point.find_intersect_y(cur_ball, next_ball, cur_ball.y)
 
                         elif val == 3:
                             self.v_reflection(brick_right.x, next_ball)
                             cur_ball.x = brick_right.x
-                            cur_ball.y = find_intersect_x(cur_ball, next_ball, cur_ball.x)
+                            cur_ball.y = Point.find_intersect_x(cur_ball, next_ball, cur_ball.x)
 
                         elif val == 4:
                             self.h_reflection(brick.y - 0.5, next_ball)
                             cur_ball.y = brick.y - 0.5
-                            cur_ball.x = find_intersect_y(cur_ball, next_ball, cur_ball.y)
+                            cur_ball.x = Point.find_intersect_y(cur_ball, next_ball, cur_ball.y)
 
                         else:
                             pass
 
-                # Creating powerups from exploded bricks
+                # Creating powers from exploded bricks
                 no_exploding_brick = True
                 while no_exploding_brick:
                     no_exploding_brick = False
@@ -135,7 +135,7 @@ class Ball:
                         if brick.strength <= 0:
                             score += brick.break_score
                             if random.randint(1, POWER_CHANCES) == 1:
-                                new_powers.append(random_powers(brick))
+                                new_powers.append(brick.random_powers())
                             if isinstance(brick, ExplodingBrick):
                                 no_exploding_brick = True
                                 for j in range(len(bricks)):

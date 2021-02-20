@@ -1,4 +1,5 @@
-from config import *
+from powerup import *
+import random
 
 
 class Brick:
@@ -8,6 +9,34 @@ class Brick:
         self.y = y
         self.length = BRICK_LEN
         self.char = BRICK_CHAR[0]
+
+    def random_powers(self):
+        val = random.randint(1, 6)
+        if val == 1:
+            return ExpandPaddle(self)
+        elif val == 2:
+            return ShrinkPaddle(self)
+        elif val == 3:
+            return BallMultiplier(self)
+        elif val == 4:
+            return FastBall(self)
+        elif val == 5:
+            return ThruBall(self)
+        else:
+            return PaddleGrab(self)
+
+    @staticmethod
+    def sort_bricks(collided_bricks, cur_ball):
+
+        def y_sort(brick):
+            return brick.y
+
+        def x_sort(brick):
+            return brick.x
+
+        collided_bricks.sort(reverse=(cur_ball.y_velocity < 0), key=y_sort)
+        collided_bricks.sort(reverse=(cur_ball.x_velocity < 0), key=x_sort)
+        return collided_bricks[0]
 
 
 class OneHitBrick(Brick):

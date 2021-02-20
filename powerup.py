@@ -8,7 +8,15 @@ class PowerUp:
         self.x = brick.x
         self.y = brick.y
 
-    def move(self,paddle):
+    @staticmethod
+    def power():
+        pass
+
+    @staticmethod
+    def unpower():
+        pass
+
+    def move(self, paddle):
         ret_val = 0
         next_y = self.y + POWER_VEL
 
@@ -30,11 +38,13 @@ class ExpandPaddle(PowerUp):
         self.char = "E"
         self.color = POWER_COLOR['ExpandPaddle']
 
-    def power(self, paddle, balls):
+    @staticmethod
+    def power(paddle, balls):
         paddle.length += PAD_LEN_EXTENSION
         return True
 
-    def unpower(self, paddle, balls):
+    @staticmethod
+    def unpower(paddle, balls):
         paddle.length -= PAD_LEN_EXTENSION
 
 
@@ -45,13 +55,15 @@ class ShrinkPaddle(PowerUp):
         self.char = "S"
         self.color = POWER_COLOR['ShrinkPaddle']
 
-    def power(self, paddle, balls):
+    @staticmethod
+    def power(paddle, balls):
         if paddle.length > 3:
             paddle.length -= PAD_LEN_SHRINK
             return True
         return False
 
-    def unpower(self, paddle, balls):
+    @staticmethod
+    def unpower(paddle, balls):
         paddle.length += PAD_LEN_SHRINK
 
 
@@ -62,7 +74,8 @@ class BallMultiplier(PowerUp):
         self.char = "M"
         self.color = POWER_COLOR['BallMultiplier']
 
-    def power(self, paddle, balls):
+    @staticmethod
+    def power(paddle, balls):
         new_balls = []
         for ball in balls:
             ball1 = copy.deepcopy(ball)
@@ -81,8 +94,8 @@ class FastBall(PowerUp):
         self.char = "F"
         self.color = POWER_COLOR['FastBall']
 
-
-    def power(self, paddle, balls):
+    @staticmethod
+    def power(paddle, balls):
         for ball in balls:
             if ball.y_velocity > 0:
                 ball.y_velocity += FAST_BALL_VEL
@@ -90,7 +103,8 @@ class FastBall(PowerUp):
                 ball.y_velocity -= FAST_BALL_VEL
         return True
 
-    def unpower(self, paddle, balls):
+    @staticmethod
+    def unpower(paddle, balls):
         for ball in balls:
             if ball.y_velocity > 0:
                 ball.y_velocity -= FAST_BALL_VEL
@@ -105,12 +119,14 @@ class ThruBall(PowerUp):
         self.char = "T"
         self.color = POWER_COLOR['ThruBall']
 
-    def power(self, paddle, balls):
+    @staticmethod
+    def power(paddle, balls):
         for ball in balls:
             ball.strength = MAX_BALL_STRENGTH
         return True
 
-    def unpower(self, paddle, balls):
+    @staticmethod
+    def unpower(paddle, balls):
         for ball in balls:
             ball.strength = 1
 
@@ -122,10 +138,11 @@ class PaddleGrab(PowerUp):
         self.char = "G"
         self.color = POWER_COLOR['PaddleGrab']
 
-
-    def power(self, paddle, balls):
+    @staticmethod
+    def power(paddle, balls):
         paddle.is_sticky = True
         return True
 
-    def unpower(self, paddle, balls):
+    @staticmethod
+    def unpower(paddle, balls):
         paddle.is_sticky = False

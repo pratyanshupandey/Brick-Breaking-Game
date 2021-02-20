@@ -1,6 +1,6 @@
 from paddle import Paddle
 from ball import Ball
-from utils import *
+from point import *
 from input import get_input
 from time import time
 from brick_layouts import *
@@ -112,8 +112,8 @@ class Game:
         self.grid[0][0] = self.grid[0][-1] = SCREEN_BORDER + " "
 
         # Printing Score and Lives
-        self.grid[2], self.grid[3] = get_score_grid(self.score, int(time() - self.start_time), self.lives,
-                                                    self.active_powers, time())
+        self.grid[2], self.grid[3] = Game.get_score_grid(self.score, int(time() - self.start_time), self.lives,
+                                                         self.active_powers, time())
 
         # Printing Paddle
         paddle_left = self.paddle.x - self.paddle.length // 2
@@ -145,26 +145,46 @@ class Game:
                 print(el, end="")
             print(Style.RESET_ALL)
 
+    @staticmethod
+    def get_score_grid(score, tim, lives, powers, cur_time):
+        score_line = [SCREEN_BORDER + "|"]
+        score_str = "  SCORE = {}   TIME = {}   LIVES = {}".format(score, tim, lives)
+        for i in range(SCREEN_COLS - 2 - len(score_str)):
+            score_str += " "
+        score_line.append(SCREEN_BG + score_str)
+        score_line.append(SCREEN_BORDER + "|")
 
-def run_game():
-    score = None
-    tim = None
-    try:
-        init()
-        brick_layout = brick_layout1()
-        game = Game(brick_layout)
-        clear_screen()
-        score, tim = game.start()
+        power_line = [SCREEN_BORDER + "|"]
+        power_str = "  POWERUPS = "
+        for tim, power in powers:
+            power_str += ("{}({}) ".format(power.__class__.__name__, POWER_TIMEOUT - int(cur_time - tim)))
+        for i in range(SCREEN_COLS - 2 - len(power_str)):
+            power_str += " "
+        power_line.append(DATA_COLOR + power_str)
+        power_line.append(SCREEN_BORDER + "|")
 
-    finally:
-        fd = sys.stdin.fileno()
-        settings = termios.tcgetattr(fd)
-        settings[3] = settings[3] | termios.ECHO
-        termios.tcsetattr(fd, termios.TCSADRAIN, settings)
-        print(Style.RESET_ALL)
-        deinit()
-        if score is not None and tim is not None:
-            print("\n\n\n\n\n\n")
-            print("\t\tTotal Score = {}".format(score))
-            print("\t\tTotal Time = {}".format(tim))
-            print("\n\n\n\n\n\n")
+        return score_line, power_line
+
+    @staticmethod
+    def run_game():
+        score = None
+        tim = None
+        try:
+            init()
+            brick_layout = brick_layout1()
+            game = Game(brick_layout)
+            clear_screen()
+            score, tim = game.start()
+
+        finally:
+            fd = sys.stdin.fileno()
+            settings = termios.tcgetattr(fd)
+            settings[3] = settings[3] | termios.ECHO
+            termios.tcsetattr(fd, termios.TCSADRAIN, settings)
+            print(Style.RESET_ALL)
+            deinit()
+            if score is not None and tim is not None:
+                print("\n\n\n\n\n\n")
+                print("\t\tTotal Score = {}".format(score))
+                print("\t\tTotal Time = {}".format(tim))
+                print("\n\n\n\n\n\n")
