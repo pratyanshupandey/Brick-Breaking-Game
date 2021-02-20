@@ -38,6 +38,13 @@ class Brick:
         collided_bricks.sort(reverse=(cur_ball.x_velocity < 0), key=x_sort)
         return collided_bricks[0]
 
+    @staticmethod
+    def br_count(bricks):
+        count = 0
+        for brick in bricks:
+            if not isinstance(brick, UnbreakableBrick):
+                count += 1
+        return count
 
 class OneHitBrick(Brick):
 

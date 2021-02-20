@@ -6,6 +6,8 @@ def load_layout(layout):
         return brick_layout1()
     elif layout == 2:
         return brick_layout2()
+    elif layout == 3:
+        return brick_layout3()
     else:
         return []
 
@@ -44,4 +46,17 @@ def brick_layout2():
             bricks.append(UnbreakableBrick(i, 14))
 
     bricks.append(OneHitBrick(62, 16))
+    return bricks
+
+
+def brick_layout3():
+    bricks = []
+    for i in range(25, 100, BRICK_LEN):
+        bricks.append(OneHitBrick(i, 15))
+    for i in range(25, 100, BRICK_LEN):
+        bricks.append(TwoHitBrick(i, 14))
+    for i in range(25, 100, BRICK_LEN):
+        bricks.append(ExplodingBrick(i, 13))
+    for i in range(25, 100, BRICK_LEN):
+        bricks.append(UnbreakableBrick(i, 12))
     return bricks

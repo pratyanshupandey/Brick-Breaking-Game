@@ -27,6 +27,8 @@ class Game:
     def start(self):
         while self.lives > 0 and (not self.quit):
             self.loop()
+            if len(self.balls) != 0:
+                break
             self.lives -= 1
             self.balls = [Ball()]
             self.visible_powers = []
@@ -86,7 +88,7 @@ class Game:
                     power.unpower(self.paddle, self.balls)
                     self.active_powers.remove((start_time, power))
 
-            if len(self.balls) == 0 or len(self.bricks) == 0:
+            if len(self.balls) == 0 or Brick.br_count(self.bricks) == 0:
                 self.is_running = False
 
             self.create_grid()
