@@ -29,61 +29,48 @@ def random_powers(brick):
     else:
         return PaddleGrab(brick)
 
-# Given three colinear points p, q, r, the function checks if
-# point q lies on line segment 'pr'
-def onSegment(p, q, r):
+
+# Checks if q is on pr
+def point_on_segment(p, q, r):
     if ((q.x <= max(p.x, r.x)) and (q.x >= min(p.x, r.x)) and
             (q.y <= max(p.y, r.y)) and (q.y >= min(p.y, r.y))):
         return True
     return False
 
 
+# 0 = Collinear 1 = Clockwise 2 = Anti-Clockwise
 def orientation(p, q, r):
     val = (float(q.y - p.y) * (r.x - q.x)) - (float(q.x - p.x) * (r.y - q.y))
     if val > 0:
-        # Clockwise orientation
         return 1
     elif val < 0:
-        # Counterclockwise orientation
         return 2
     else:
-        # Colinear orientation
         return 0
 
 
-# The main function that returns true if
-# the line segment 'p1q1' and 'p2q2' intersect.
-def doIntersect(p1, q1, p2, q2):
-    # Find the 4 orientations required for
-    # the general and special cases
+# Check if p1q1 and p2q2 intersect
+def is_intersecting(p1, q1, p2, q2):
     o1 = orientation(p1, q1, p2)
     o2 = orientation(p1, q1, q2)
     o3 = orientation(p2, q2, p1)
     o4 = orientation(p2, q2, q1)
 
-    # General case
-    if ((o1 != o2) and (o3 != o4)):
+    if (o1 != o2) and (o3 != o4):
         return True
 
-    # Special Cases
-
-    # p1 , q1 and p2 are colinear and p2 lies on segment p1q1
-    if ((o1 == 0) and onSegment(p1, p2, q1)):
+    if (o1 == 0) and point_on_segment(p1, p2, q1):
         return True
 
-    # p1 , q1 and q2 are colinear and q2 lies on segment p1q1
-    if ((o2 == 0) and onSegment(p1, q2, q1)):
+    if (o2 == 0) and point_on_segment(p1, q2, q1):
         return True
 
-    # p2 , q2 and p1 are colinear and p1 lies on segment p2q2
-    if ((o3 == 0) and onSegment(p2, p1, q2)):
+    if (o3 == 0) and point_on_segment(p2, p1, q2):
         return True
 
-    # p2 , q2 and q1 are colinear and q1 lies on segment p2q2
-    if ((o4 == 0) and onSegment(p2, q1, q2)):
+    if (o4 == 0) and point_on_segment(p2, q1, q2):
         return True
 
-    # If none of the cases
     return False
 
 
@@ -113,11 +100,11 @@ def is_vertical(cur_ball, next_ball, brick_left, brick_right):
         return 0
     right_wall_top = Point(brick_right.x, brick_right.y - 0.5)
     right_wall_bottom = Point(brick_right.x, brick_right.y + 0.5)
-    if doIntersect(cur_ball, next_ball, right_wall_top, right_wall_bottom):
+    if is_intersecting(cur_ball, next_ball, right_wall_top, right_wall_bottom):
         return 1
     left_wall_top = Point(brick_left.x, brick_left.y - 0.5)
     left_wall_bottom = Point(brick_left.x, brick_left.y + 0.5)
-    if doIntersect(cur_ball, next_ball, left_wall_top, left_wall_bottom):
+    if is_intersecting(cur_ball, next_ball, left_wall_top, left_wall_bottom):
         return 2
     return 0
 
@@ -135,10 +122,10 @@ def rect_intersection(cur_ball, next_ball, brick_left, brick_right):
     left_wall_top = Point(brick_left.x, brick_left.y - 0.5)
     left_wall_bottom = Point(brick_left.x, brick_left.y + 0.5)
 
-    left = doIntersect(cur_ball, next_ball, left_wall_top, left_wall_bottom)
-    right = doIntersect(cur_ball, next_ball, right_wall_top, right_wall_bottom)
-    top = doIntersect(cur_ball, next_ball, right_wall_top, left_wall_top)
-    bottom = doIntersect(cur_ball, next_ball, left_wall_bottom, right_wall_bottom)
+    left = is_intersecting(cur_ball, next_ball, left_wall_top, left_wall_bottom)
+    right = is_intersecting(cur_ball, next_ball, right_wall_top, right_wall_bottom)
+    top = is_intersecting(cur_ball, next_ball, right_wall_top, left_wall_top)
+    bottom = is_intersecting(cur_ball, next_ball, left_wall_bottom, right_wall_bottom)
 
     if left and cur_ball.x < brick_left.x:
         return 1

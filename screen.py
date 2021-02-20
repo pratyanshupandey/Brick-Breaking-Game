@@ -53,7 +53,7 @@ class Game:
                 else:
                     pass
 
-            # Moving Balls, Checking Collisions and Creating Powerups
+            # Moving Balls, Checking Collisions and Creating Powers
             for ball in self.balls:
                 is_ball, add_score, new_powers = ball.move(self.paddle, self.bricks)
                 if not is_ball:
@@ -131,6 +131,8 @@ class Game:
             brick_right = brick.x + brick.length // 2
             for i in range(brick_left, brick_right + 1):
                 self.grid[brick.y][i] = brick.color + brick.char
+            self.grid[brick.y][brick_left] = brick.color + "["
+            self.grid[brick.y][brick_right] = brick.color + "]"
 
         # Printing Powers
         for power in self.visible_powers:
@@ -141,8 +143,7 @@ class Game:
         for row in self.grid:
             for el in row:
                 print(el, end="")
-            print()
-        self.last_loaded = time()
+            print(Style.RESET_ALL)
 
 
 def run_game():

@@ -6,7 +6,7 @@ class Ball:
 
     def __init__(self):
         self.x = SCREEN_COLS // 2
-        self.y = SCREEN_ROWS - 4
+        self.y = SCREEN_ROWS - 1 - PAD_VER_OFF
         self.is_stuck = True
         self.offset = random.randint(-1 * (PAD_LEN // 2), PAD_LEN // 2)
         self.x_velocity = self.offset * BALL_VEL
@@ -34,10 +34,10 @@ class Ball:
                 paddle_left = Point(paddle.x - paddle.length // 2 - 0.5, paddle.y - 0.5)
                 paddle_right = Point(paddle.x + paddle.length // 2 + 0.5, paddle.y - 0.5)
 
-                if doIntersect(cur_ball, next_ball, paddle_left, paddle_right) and cur_ball.y != paddle_left.y:
+                if is_intersecting(cur_ball, next_ball, paddle_left, paddle_right) and cur_ball.y != paddle_left.y:
                     collision = True
                     intersect = find_intersect_y(cur_ball, next_ball, paddle.y)
-                    self.offset = (intersect - paddle.x) * OFFSET_INCREASE
+                    self.offset = int((intersect - paddle.x) * OFFSET_INCREASE)
 
                     if paddle.is_sticky:
                         self.is_stuck = True
