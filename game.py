@@ -14,7 +14,15 @@ while True:
 
     val = input("Option: ")
     if val == 'p':
-        Game.run_game()
+        print("\n\n\nBrick Layouts")
+        print("1. Without any Exploding Bricks")
+        print("2. With Exploding Bricks")
+        layout = input("Choose Layout: ")
+        if layout.isnumeric() and int(layout) in range(1,3):
+            Game.run_game(int(layout))
+        else:
+            print("Invalid Input")
+
     elif val == 'q':
         break
     else:

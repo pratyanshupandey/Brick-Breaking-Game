@@ -166,12 +166,12 @@ class Game:
         return score_line, power_line
 
     @staticmethod
-    def run_game():
+    def run_game(layout):
         score = None
         tim = None
         try:
             init()
-            brick_layout = brick_layout1()
+            brick_layout = load_layout(layout)
             game = Game(brick_layout)
             clear_screen()
             score, tim = game.start()
