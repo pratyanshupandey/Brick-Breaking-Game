@@ -10,11 +10,11 @@ class PowerUp:
 
     @staticmethod
     def power():
-        pass
+        print("Power Up Activated")
 
     @staticmethod
     def unpower():
-        pass
+        print("Power Up De-activated")
 
     def move(self, paddle):
         ret_val = 0

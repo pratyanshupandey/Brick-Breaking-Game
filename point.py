@@ -11,46 +11,42 @@ class Point:
         self.x = x
         self.y = y
 
-    # Checks if q is on pr
+    # Checks if r is on pq
     @staticmethod
-    def q_on_pr(p, q, r):
-        if ((q.x <= max(p.x, r.x)) and (q.x >= min(p.x, r.x)) and
-                (q.y <= max(p.y, r.y)) and (q.y >= min(p.y, r.y))):
+    def r_on_pq(p, r, q):
+
+        if (max(p.x, q.x) >= r.x) and\
+                (min(p.x, q.x) <= r.x) and\
+                (max(p.y, q.y) >= r.y) and\
+                (min(p.y, q.y) <= r.y):
             return True
         return False
 
     # 0 = Collinear 1 = Clockwise 2 = Anti-Clockwise
     @staticmethod
-    def orientation(p, q, r):
-        val = (float(q.y - p.y) * (r.x - q.x)) - (float(q.x - p.x) * (r.y - q.y))
-        if val > 0:
-            return 1
-        elif val < 0:
-            return 2
-        else:
+    def tp_orient(p, q, r):
+        val1 = float(q.y - p.y) * float(r.x - q.x)
+        val2 = float(q.x - p.x) * float(r.y - q.y)
+        if val1 == val2:
             return 0
+        elif val1 > val2:
+            return 1
+        else:
+            return 2
 
     # Check if p1q1 and p2q2 intersect
     @staticmethod
     def is_intersecting(p1, q1, p2, q2):
-        o1 = Point.orientation(p1, q1, p2)
-        o2 = Point.orientation(p1, q1, q2)
-        o3 = Point.orientation(p2, q2, p1)
-        o4 = Point.orientation(p2, q2, q1)
+        orientation1 = Point.tp_orient(p1, q1, p2)
+        orientation2 = Point.tp_orient(p1, q1, q2)
+        orientation3 = Point.tp_orient(p2, q2, p1)
+        orientation4 = Point.tp_orient(p2, q2, q1)
 
-        if (o1 != o2) and (o3 != o4):
-            return True
-
-        if (o1 == 0) and Point.q_on_pr(p1, p2, q1):
-            return True
-
-        if (o2 == 0) and Point.q_on_pr(p1, q2, q1):
-            return True
-
-        if (o3 == 0) and Point.q_on_pr(p2, p1, q2):
-            return True
-
-        if (o4 == 0) and Point.q_on_pr(p2, q1, q2):
+        if ((orientation1 != orientation2) and (orientation3 != orientation4)) or \
+                ((orientation1 == 0) and Point.r_on_pq(p1, p2, q1)) or \
+                ((orientation2 == 0) and Point.r_on_pq(p1, q2, q1)) or \
+                ((orientation3 == 0) and Point.r_on_pq(p2, p1, q2)) or \
+                ((orientation4 == 0) and Point.r_on_pq(p2, q1, q2)):
             return True
 
         return False
