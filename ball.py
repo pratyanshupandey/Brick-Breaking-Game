@@ -14,6 +14,7 @@ class Ball:
         self.strength = 1
 
     def move(self, paddle, bricks):
+        paddle_collision = False
         ret_val = True
         score = 0
         new_powers = []
@@ -36,6 +37,7 @@ class Ball:
 
                 if Point.is_intersecting(cur_ball, next_ball, paddle_left, paddle_right) and cur_ball.y != paddle_left.y:
                     collision = True
+                    paddle_collision = True
                     intersect = Point.find_intersect_y(cur_ball, next_ball, paddle.y)
                     self.offset = int((intersect - paddle.x) * OFFSET_INCREASE)
 
@@ -135,7 +137,7 @@ class Ball:
                         if brick.strength <= 0:
                             score += brick.break_score
                             if random.randint(1, POWER_CHANCES) == 1:
-                                new_powers.append(brick.random_powers())
+                                new_powers.append(brick.random_powers(self))
                             if isinstance(brick, ExplodingBrick):
                                 no_exploding_brick = True
                                 for j in range(len(bricks)):
@@ -147,7 +149,7 @@ class Ball:
             self.x = next_ball.x
             self.y = next_ball.y
 
-        return ret_val, score, new_powers
+        return ret_val, score, new_powers, paddle_collision
 
     def launch(self):
         self.is_stuck = False

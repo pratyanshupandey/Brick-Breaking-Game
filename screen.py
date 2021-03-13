@@ -11,12 +11,13 @@ from colorama import init, deinit, Style
 
 
 class Game:
-    def __init__(self, bricks):
+    def __init__(self):
         self.paddle = Paddle()
         self.balls = [Ball()]
         self.visible_powers = []
         self.active_powers = []
-        self.bricks = bricks
+        self.level = 1
+        self.bricks = load_layout(self.level)
         self.grid = []
         self.is_running = True
         self.quit = False
@@ -25,23 +26,31 @@ class Game:
         self.start_time = time()
 
     def start(self):
-        while self.lives > 0 and (not self.quit):
-            self.loop()
-            if len(self.balls) != 0:
+        while self.lives > 0 and self.level < 4:
+            # -1 quitgame
+            # 0 all bricks done
+            # 1 no ball left
+            # 2 next level skip
+            val = self.loop()
+            if val == -1:
                 break
-            self.lives -= 1
+            elif val == 0 or val == 2:
+                self.level += 1
+                self.bricks = load_layout(self.level)
+            elif val == 1:
+                self.lives -= 1
+
             self.balls = [Ball()]
             self.visible_powers = []
             self.active_powers = []
             self.paddle = Paddle()
-            self.is_running = True
 
         return self.score, int(time() - self.start_time)
 
     def loop(self):
 
         # Taking Input
-        while self.is_running:
+        while True:
             inputs = get_input()
             for inp in inputs:
                 if inp == "a" or inp == "d":
@@ -50,14 +59,15 @@ class Game:
                     for ball in self.balls:
                         ball.launch()
                 elif inp == "q":
-                    self.is_running = False
-                    self.quit = True
+                    return -1
+                elif inp == "n":
+                    return 2
                 else:
                     pass
 
             # Moving Balls, Checking Collisions and Creating Powers
             for ball in self.balls:
-                is_ball, add_score, new_powers = ball.move(self.paddle, self.bricks)
+                is_ball, add_score, new_powers, paddle_col = ball.move(self.paddle, self.bricks)
                 if not is_ball:
                     self.balls.remove(ball)
                 self.score += add_score
@@ -83,13 +93,22 @@ class Game:
                 else:
                     pass
 
+            for i in range(len(self.bricks)):
+                if isinstance(self.bricks[i], RainbowBrick):
+                    if self.bricks[i].is_changing:
+                        self.bricks[i].alter()
+                    else:
+                        self.bricks[i] = self.bricks[i].replace()
+
             for start_time, power in self.active_powers:
                 if time() - start_time >= POWER_TIMEOUT:
                     power.unpower(self.paddle, self.balls)
                     self.active_powers.remove((start_time, power))
 
-            if len(self.balls) == 0 or Brick.br_count(self.bricks) == 0:
-                self.is_running = False
+            if Brick.br_count(self.bricks) == 0:
+                return 0
+            elif len(self.balls) == 0:
+                return 1
 
             self.create_grid()
             self.print_grid()
@@ -168,13 +187,12 @@ class Game:
         return score_line, power_line
 
     @staticmethod
-    def run_game(layout):
+    def run_game():
         score = None
         tim = None
         try:
             init()
-            brick_layout = load_layout(layout)
-            game = Game(brick_layout)
+            game = Game()
             clear_screen()
             score, tim = game.start()
 

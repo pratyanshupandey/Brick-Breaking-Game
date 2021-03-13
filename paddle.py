@@ -7,6 +7,7 @@ class Paddle:
         self.y = SCREEN_ROWS - PAD_VER_OFF
         self.length = PAD_LEN
         self.is_sticky = False
+        self.is_shooter = False
 
     def move(self, inp):
         if inp == "a":

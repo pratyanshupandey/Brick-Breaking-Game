@@ -4,26 +4,29 @@ import random
 
 class Brick:
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, index):
         self.x = x
         self.y = y
         self.length = BRICK_LEN
-        self.char = BRICK_CHAR[0]
+        self.strength = BRICK_STRENGTH[index]
+        self.char = BRICK_CHAR[index]
+        self.color = BRICK_COLOR[index]
+        self.break_score = BRICK_BREAK_SCORE[index]
 
-    def random_powers(self):
+    def random_powers(self, ball):
         val = random.randint(1, 6)
         if val == 1:
-            return ExpandPaddle(self)
+            return ExpandPaddle(self, ball)
         elif val == 2:
-            return ShrinkPaddle(self)
+            return ShrinkPaddle(self, ball)
         elif val == 3:
-            return BallMultiplier(self)
+            return BallMultiplier(self, ball)
         elif val == 4:
-            return FastBall(self)
+            return FastBall(self, ball)
         elif val == 5:
-            return ThruBall(self)
+            return ThruBall(self, ball)
         else:
-            return PaddleGrab(self)
+            return PaddleGrab(self, ball)
 
     @staticmethod
     def sort_bricks(collided_bricks, cur_ball):
@@ -46,51 +49,61 @@ class Brick:
                 count += 1
         return count
 
+
 class OneHitBrick(Brick):
 
     def __init__(self, x, y):
-        super().__init__(x, y)
-        self.strength = 1
-        self.char = BRICK_CHAR[0]
-        self.color = BRICK_COLOR[0]
-        self.break_score = 10
+        self.index = 0
+        super().__init__(x, y, self.index)
 
 
 class TwoHitBrick(Brick):
 
     def __init__(self, x, y):
-        super().__init__(x, y)
-        self.strength = 2
-        self.char = BRICK_CHAR[1]
-        self.color = BRICK_COLOR[1]
-        self.break_score = 30
+        self.index = 1
+        super().__init__(x, y, self.index)
 
 
 class ThreeHitBrick(Brick):
 
     def __init__(self, x, y):
-        super().__init__(x, y)
-        self.strength = 3
-        self.char = BRICK_CHAR[2]
-        self.color = BRICK_COLOR[2]
-        self.break_score = 100
+        self.index = 2
+        super().__init__(x, y, self.index)
 
 
 class UnbreakableBrick(Brick):
 
     def __init__(self, x, y):
-        super().__init__(x, y)
-        self.strength = MAX_BALL_STRENGTH - 1
-        self.char = BRICK_CHAR[3]
-        self.color = BRICK_COLOR[3]
-        self.break_score = 200
+        self.index = 3
+        super().__init__(x, y, self.index)
 
 
 class ExplodingBrick(Brick):
 
     def __init__(self, x, y):
-        super().__init__(x, y)
-        self.strength = 1
-        self.char = BRICK_CHAR[4]
-        self.color = BRICK_COLOR[4]
-        self.break_score = 30
+        self.index = 4
+        super().__init__(x, y, self.index)
+
+
+class RainbowBrick(Brick):
+
+    def __init__(self, x, y):
+        self.index = 0
+        super().__init__(x, y, self.index)
+        self.is_changing = True
+
+    def alter(self):
+        self.index = (self.index + 1) % 4
+        super().__init__(self.x, self.y, self.index)
+
+    def replace(self):
+        if self.index == 0:
+            return OneHitBrick(self.x, self.y)
+        elif self.index == 1:
+            return TwoHitBrick(self.x, self.y)
+        elif self.index == 3:
+            return ThreeHitBrick(self.x, self.y)
+        elif self.index == 0:
+            return UnbreakableBrick(self.x, self.y)
+        elif self.index == 0:
+            return ExplodingBrick(self.x, self.y)

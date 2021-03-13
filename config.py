@@ -30,7 +30,10 @@ PAD_CHAR = "T"
 PADDLE_COLOR = Back.GREEN + Fore.RED + Style.DIM
 
 # Brick Info
+FALLING_BRICKS_TIMEOUT = [50,50,50,50]
 BRICK_LEN = 7
+BRICK_STRENGTH = [1,2,3,MAX_BALL_STRENGTH - 1, 1]
+BRICK_BREAK_SCORE = [10,30,100,200,30]
 BRICK_CHAR = ["@", "#", "&", "+", "%"]
 BRICK_COLOR = [Back.GREEN + Fore.GREEN + Style.DIM,
                Back.BLUE + Fore.BLUE + Style.DIM,
@@ -49,5 +52,6 @@ POWER_COLOR = {
     'BallMultiplier': Back.BLUE + Fore.YELLOW,
     'FastBall': Back.BLACK + Fore.YELLOW,
     'ThruBall': Back.CYAN + Fore.YELLOW,
-    'PaddleGrab': Back.MAGENTA + Fore.YELLOW
+    'PaddleGrab': Back.MAGENTA + Fore.YELLOW,
+    'ShootingPaddle': Back.WHITE + Fore.YELLOW
 }
