@@ -28,6 +28,7 @@ PAD_LEN_EXTENSION = 4
 PAD_LEN_SHRINK = 4
 PAD_CHAR = "T"
 PADDLE_COLOR = Back.GREEN + Fore.RED + Style.DIM
+SHOOTING_PADDLE_AUG = "|"
 
 # Brick Info
 FALLING_BRICKS_TIMEOUT = [50,50,50,50]
@@ -55,3 +56,10 @@ POWER_COLOR = {
     'PaddleGrab': Back.MAGENTA + Fore.YELLOW,
     'ShootingPaddle': Back.WHITE + Fore.YELLOW
 }
+GRAVITY = -1
+
+# Bullets Info
+BULLET_CHAR = "I"
+BULLET_COLOR = Back.WHITE + Fore.BLACK
+BULLET_SPEED = -1
+BULLET_TIMEOUT = 1

@@ -1,6 +1,7 @@
 from config import *
 import copy
 from point import Point
+from time import time
 
 
 class PowerUp:
@@ -74,6 +75,7 @@ class PowerUp:
         self.x = next_ball.x
         self.y = next_ball.y
 
+        self.y_velocity += GRAVITY
         return ret_val
 
     def h_reflection(self, y, next_ball):
@@ -211,6 +213,7 @@ class ShootingPaddle(PowerUp):
     @staticmethod
     def power(paddle, balls):
         paddle.is_shooter = True
+        paddle.last_bullet = time() - BULLET_TIMEOUT
         return True
 
     @staticmethod

@@ -2,6 +2,7 @@ from paddle import Paddle
 from ball import Ball
 from point import *
 from input import get_input
+from bullet import *
 from time import time
 from brick_layouts import *
 from powerup import *
@@ -14,6 +15,7 @@ class Game:
     def __init__(self):
         self.paddle = Paddle()
         self.balls = [Ball()]
+        self.bullets = []
         self.visible_powers = []
         self.active_powers = []
         self.level = 1
@@ -64,6 +66,18 @@ class Game:
                     return 2
                 else:
                     pass
+
+            # Create Bullets
+            if time() - self.paddle.last_bullet > BULLET_TIMEOUT:
+                self.bullets.append(Bullet(self.paddle.x - self.paddle.length // 2, self.paddle.y - 1))
+                self.bullets.append(Bullet(self.paddle.x + self.paddle.length // 2, self.paddle.y - 1))
+
+            # Bullets
+            for bullet in self.bullets:
+                ret_val, score = bullet.move(self.bricks)
+                if ret_val == -1:
+                    self.bullets.remove(bullet)
+                self.score += score
 
             # Moving Balls, Checking Collisions and Creating Powers
             for ball in self.balls:
@@ -141,10 +155,18 @@ class Game:
         paddle_right = self.paddle.x + self.paddle.length // 2
         for i in range(paddle_left, paddle_right + 1):
             self.grid[self.paddle.y][i] = PADDLE_COLOR + PAD_CHAR
+        if self.paddle.is_shooter:
+            self.grid[self.paddle.y][paddle_left] = SHOOTING_PADDLE_AUG
+            self.grid[self.paddle.y][paddle_left] = SHOOTING_PADDLE_AUG
+
+        # Printing Bullets
+        for bullet in self.bullets:
+            self.grid[round(bullet.y)][round(bullet.x)] = BULLET_COLOR + BULLET_CHAR
 
         # Printing Balls
         for ball in self.balls:
             self.grid[round(ball.y)][round(ball.x)] = BALL_COLOR + BALL_CHAR
+
 
         # Printing Bricks
         for brick in self.bricks:

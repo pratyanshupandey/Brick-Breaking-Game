@@ -8,6 +8,7 @@ class Paddle:
         self.length = PAD_LEN
         self.is_sticky = False
         self.is_shooter = False
+        self.last_bullet = 0
 
     def move(self, inp):
         if inp == "a":
