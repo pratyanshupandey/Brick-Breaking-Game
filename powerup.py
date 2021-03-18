@@ -75,7 +75,7 @@ class PowerUp:
         self.x = next_ball.x
         self.y = next_ball.y
 
-        self.y_velocity += GRAVITY
+        self.y_velocity = min(POWER_VEL_CAP, self.y_velocity + GRAVITY)
         return ret_val
 
     def h_reflection(self, y, next_ball):

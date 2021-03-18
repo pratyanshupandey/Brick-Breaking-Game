@@ -44,9 +44,12 @@ class Bullet:
         if len(collided_bricks) != 0:
             ret_val = -1
             brick = Brick.sort_bricks(collided_bricks, self)
-            brick.strength -= self.strength
-            if isinstance(brick, RainbowBrick):
+
+            if isinstance(brick, RainbowBrick) and brick.is_changing:
                 brick.is_changing = False
+                brick.fix()
+            else:
+                brick.strength -= self.strength
 
             if brick.strength <= 0:
                 pass

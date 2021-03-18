@@ -92,12 +92,13 @@ class Point:
     #   ___________
     #       2           0 = No intersection
     @staticmethod
-    def rect_intersection(cur_ball, next_ball, brick_left, brick_right):
-        right_wall_top = Point(brick_right.x, brick_right.y - 0.5)
-        right_wall_bottom = Point(brick_right.x, brick_right.y + 0.5)
+    def rect_intersection(cur_ball, next_ball, brick_left, brick_right, height=0):
 
-        left_wall_top = Point(brick_left.x, brick_left.y - 0.5)
-        left_wall_bottom = Point(brick_left.x, brick_left.y + 0.5)
+        right_wall_top = Point(brick_right.x, brick_right.y - height//2 - 0.5)
+        right_wall_bottom = Point(brick_right.x, brick_right.y + height//2 + 0.5)
+
+        left_wall_top = Point(brick_left.x, brick_left.y - height//2- 0.5)
+        left_wall_bottom = Point(brick_left.x, brick_left.y + height//2 + 0.5)
 
         left = Point.is_intersecting(cur_ball, next_ball, left_wall_top, left_wall_bottom)
         right = Point.is_intersecting(cur_ball, next_ball, right_wall_top, right_wall_bottom)

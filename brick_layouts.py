@@ -62,8 +62,8 @@ def brick_layout3():
     return bricks
 
 def boss_brick_1():
-    return [OneHitBrick(30,40)]
+    return [OneHitBrick(30,BOMB_Y + 1)]
 
 
 def boss_brick_2():
-    return [OneHitBrick(30,40)]
+    return [OneHitBrick(10,BOMB_Y + 2)]

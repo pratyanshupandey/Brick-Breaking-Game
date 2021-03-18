@@ -47,7 +47,7 @@ class Brick:
     def br_count(bricks):
         count = 0
         for brick in bricks:
-            if not isinstance(brick, UnbreakableBrick):
+            if brick.strength <= 10:
                 count += 1
         return count
 
@@ -92,10 +92,15 @@ class RainbowBrick(Brick):
     def __init__(self, x, y):
         self.index = 0
         super().__init__(x, y, self.index)
+        self.strength = 8
         self.is_changing = True
 
     def alter(self):
         self.index = (self.index + 1) % 4
+        super().__init__(self.x, self.y, self.index)
+        self.strength = 8
+
+    def fix(self):
         super().__init__(self.x, self.y, self.index)
 
     def replace(self):
@@ -103,9 +108,7 @@ class RainbowBrick(Brick):
             return OneHitBrick(self.x, self.y)
         elif self.index == 1:
             return TwoHitBrick(self.x, self.y)
-        elif self.index == 3:
+        elif self.index == 2:
             return ThreeHitBrick(self.x, self.y)
-        elif self.index == 0:
+        elif self.index == 3:
             return UnbreakableBrick(self.x, self.y)
-        elif self.index == 0:
-            return ExplodingBrick(self.x, self.y)

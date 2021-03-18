@@ -1,6 +1,6 @@
 from point import *
 from brick import *
-
+from copy import deepcopy
 
 class Ball:
 
@@ -8,12 +8,13 @@ class Ball:
         self.x = SCREEN_COLS // 2
         self.y = SCREEN_ROWS - 1 - PAD_VER_OFF
         self.is_stuck = True
-        self.offset = int(random.randint(-1 * (PAD_LEN // 2), PAD_LEN // 2) * OFFSET_INCREASE)
+        self.offset = 0#int(random.randint(-1 * (PAD_LEN // 2), PAD_LEN // 2) * OFFSET_INCREASE)
         self.x_velocity = self.offset * BALL_VEL
         self.y_velocity = -1 * BALL_VEL
         self.strength = 1
 
-    def move(self, paddle, bricks):
+    def move(self, paddle, bricks, boss, level):
+        old_ball = deepcopy(self)
         paddle_collision = False
         ret_val = True
         score = 0
@@ -74,6 +75,36 @@ class Ball:
                 if next_ball.y >= SCREEN_ROWS - 1:
                     ret_val = False
 
+                # Collision with boss in Boss level
+                if level == BOSS_LEVEL:
+                    boss_left = Point(boss.x - BOSS_WIDTH // 2 - 0.5, boss.y)
+                    boss_right = Point(boss.x + BOSS_WIDTH // 2 + 0.5, boss.y)
+                    val = Point.rect_intersection(cur_ball, next_ball, boss_left, boss_right, BOSS_HEIGHT)
+                    if val != 0:
+                        boss.strength -= 1
+                    if val == 1:
+                        self.v_reflection(boss_left.x, next_ball)
+                        cur_ball.x = boss_left.x
+                        cur_ball.y = Point.find_intersect_x(cur_ball, next_ball, cur_ball.x)
+
+                    elif val == 2:
+                        self.h_reflection(boss.y + BOSS_HEIGHT//2 + 0.5, next_ball)
+                        cur_ball.y = boss.y + 0.5
+                        cur_ball.x = Point.find_intersect_y(cur_ball, next_ball, cur_ball.y)
+
+                    elif val == 3:
+                        self.v_reflection(boss_right.x, next_ball)
+                        cur_ball.x = boss_right.x
+                        cur_ball.y = Point.find_intersect_x(cur_ball, next_ball, cur_ball.x)
+
+                    elif val == 4:
+                        self.h_reflection(boss.y - BOSS_HEIGHT//2 - 0.5, next_ball)
+                        cur_ball.y = boss.y - 0.5
+                        cur_ball.x = Point.find_intersect_y(cur_ball, next_ball, cur_ball.y)
+
+                    else:
+                        pass
+
                 # Collision with bricks
                 collided_bricks = []
                 for brick in bricks:
@@ -90,9 +121,11 @@ class Ball:
                     brick_left = Point(brick.x - brick.length // 2 - 0.5, brick.y)
                     brick_right = Point(brick.x + brick.length // 2 + 0.5, brick.y)
                     val = Point.rect_intersection(cur_ball, next_ball, brick_left, brick_right)
-                    if isinstance(brick, RainbowBrick):
+                    if isinstance(brick, RainbowBrick) and brick.is_changing:
                         brick.is_changing = False
-                    brick.strength -= self.strength
+                        brick.fix()
+                    else:
+                        brick.strength -= self.strength
 
                     if brick.strength <= 0:
                         pass
@@ -139,7 +172,7 @@ class Ball:
                         if brick.strength <= 0:
                             score += brick.break_score
                             if random.randint(1, POWER_CHANCES) == 1:
-                                new_powers.append(brick.random_powers(self))
+                                new_powers.append(brick.random_powers(old_ball))
                             if isinstance(brick, ExplodingBrick):
                                 no_exploding_brick = True
                                 for j in range(len(bricks)):

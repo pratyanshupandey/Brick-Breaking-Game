@@ -52,6 +52,7 @@ class Game:
             self.visible_powers = []
             self.active_powers = []
             self.paddle = Paddle()
+            self.bullets = []
 
         return self.score, int(time() - self.start_time)
 
@@ -107,7 +108,7 @@ class Game:
             # Moving Balls, Checking Collisions and Creating Powers
             paddle_collision = False
             for ball in self.balls:
-                is_ball, add_score, new_powers, paddle_col = ball.move(self.paddle, self.bricks)
+                is_ball, add_score, new_powers, paddle_col = ball.move(self.paddle, self.bricks, self.boss, self.level)
                 paddle_collision |= paddle_col
                 if not is_ball:
                     self.balls.remove(ball)
@@ -139,8 +140,8 @@ class Game:
                 if isinstance(self.bricks[i], RainbowBrick):
                     if self.bricks[i].is_changing:
                         self.bricks[i].alter()
-                    else:
-                        self.bricks[i] = self.bricks[i].replace()
+                    # else:
+                    #     self.bricks[i] = self.bricks[i].replace()
 
             for start_time, power in self.active_powers:
                 if time() - start_time >= POWER_TIMEOUT:
@@ -157,7 +158,7 @@ class Game:
             if self.level == BOSS_LEVEL and self.boss.strength == BOSS_BRICK1:
                 self.bricks = boss_brick_1()
             if self.level == BOSS_LEVEL and self.boss.strength == BOSS_BRICK2:
-                self.bricks = boss_brick_2()
+                self.bricks.extend(boss_brick_2())
 
             if self.level != BOSS_LEVEL and Brick.br_count(self.bricks) == 0:
                 return 0
@@ -190,8 +191,7 @@ class Game:
         self.grid[0][0] = self.grid[0][-1] = SCREEN_BORDER + " "
 
         # Printing Score and Lives
-        self.grid[2], self.grid[3] = Game.get_score_grid(self.score, int(time() - self.start_time), self.lives,
-                                                         self.active_powers, time(), self.level)
+        self.grid[2], self.grid[3] = self.get_score_grid()
 
         # Printing Paddle
         paddle_left = self.paddle.x - self.paddle.length // 2
@@ -241,12 +241,14 @@ class Game:
                 print(el, end="")
             print(Style.RESET_ALL)
 
-    @staticmethod
-    def get_score_grid(score, tim, lives, powers, cur_time, level):
+    def get_score_grid(self):
+        tim = int(time() - self.start_time)
+
         score_line = [SCREEN_BORDER + "|"]
-        score_str = "  SCORE = {}   TIME = {}   LIVES = {}   FALLING TIMEOUT = {}"\
-            .format(score, tim, lives,
-                    FALLING_BRICKS_TIMEOUT[level] - tim if FALLING_BRICKS_TIMEOUT[level] - tim > 0 else "ACTIVATED")
+        if self.level != BOSS_LEVEL:
+            score_str = "  SCORE = {}   TIME = {}   LIVES = {}   LEVEL = {}  FALLING TIMEOUT = {}".format(self.score, tim, self.lives, self.level, FALLING_BRICKS_TIMEOUT[self.level] - tim if FALLING_BRICKS_TIMEOUT[self.level] - tim > 0 else "ACTIVATED")
+        else:
+            score_str = "  SCORE = {}   TIME = {}   LIVES = {}   LEVEL = BOSS  BOSS HEALTH = {}".format(self.score, tim, self.lives, "".join([BOSS_HEALTH_CHAR for i in range(self.boss.strength)]))
 
         for i in range(SCREEN_COLS - 2 - len(score_str)):
             score_str += " "
@@ -255,8 +257,8 @@ class Game:
 
         power_line = [SCREEN_BORDER + "|"]
         power_str = "  POWERUPS = "
-        for tim, power in powers:
-            power_str += ("{}({}) ".format(power.__class__.__name__, POWER_TIMEOUT - int(cur_time - tim)))
+        for tim, power in self.active_powers:
+            power_str += ("{}({}) ".format(power.__class__.__name__, POWER_TIMEOUT - int(time() - tim)))
         for i in range(SCREEN_COLS - 2 - len(power_str)):
             power_str += " "
         power_line.append(DATA_COLOR + power_str)
