@@ -1,7 +1,7 @@
 from config import *
 import random
 from point import Point
-from brick import ExplodingBrick, Brick
+from brick import ExplodingBrick, Brick, RainbowBrick
 
 
 class Bullet:
@@ -42,8 +42,11 @@ class Bullet:
                 collided_bricks.append(brick)
 
         if len(collided_bricks) != 0:
+            ret_val = -1
             brick = Brick.sort_bricks(collided_bricks, self)
             brick.strength -= self.strength
+            if isinstance(brick, RainbowBrick):
+                brick.is_changing = False
 
             if brick.strength <= 0:
                 pass

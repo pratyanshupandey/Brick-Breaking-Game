@@ -90,6 +90,8 @@ class Ball:
                     brick_left = Point(brick.x - brick.length // 2 - 0.5, brick.y)
                     brick_right = Point(brick.x + brick.length // 2 + 0.5, brick.y)
                     val = Point.rect_intersection(cur_ball, next_ball, brick_left, brick_right)
+                    if isinstance(brick, RainbowBrick):
+                        brick.is_changing = False
                     brick.strength -= self.strength
 
                     if brick.strength <= 0:

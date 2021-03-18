@@ -15,7 +15,7 @@ def load_layout(layout):
 def brick_layout1():
     bricks = []
     for i in range(15, 100, BRICK_LEN):
-        bricks.append(UnbreakableBrick(i, 13))
+        bricks.append(RainbowBrick(i, 13))
     j = 0
     for i in range(15, 100, BRICK_LEN):
         j += 1
@@ -60,3 +60,10 @@ def brick_layout3():
     for i in range(25, 100, BRICK_LEN):
         bricks.append(UnbreakableBrick(i, 12))
     return bricks
+
+def boss_brick_1():
+    return [OneHitBrick(30,40)]
+
+
+def boss_brick_2():
+    return [OneHitBrick(30,40)]

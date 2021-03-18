@@ -33,7 +33,7 @@ SHOOTING_PADDLE_AUG = "|"
 # Brick Info
 FALLING_BRICKS_TIMEOUT = [50,50,50,50]
 BRICK_LEN = 7
-BRICK_STRENGTH = [1,2,3,MAX_BALL_STRENGTH - 1, 1]
+BRICK_STRENGTH = [1,2,3,MAX_BALL_STRENGTH - 1, 8]
 BRICK_BREAK_SCORE = [10,30,100,200,30]
 BRICK_CHAR = ["@", "#", "&", "+", "%"]
 BRICK_COLOR = [Back.GREEN + Fore.GREEN + Style.DIM,
@@ -59,7 +59,34 @@ POWER_COLOR = {
 GRAVITY = -1
 
 # Bullets Info
-BULLET_CHAR = "I"
+BULLET_CHAR = "|"
 BULLET_COLOR = Back.WHITE + Fore.BLACK
 BULLET_SPEED = -1
 BULLET_TIMEOUT = 1
+
+
+BOSS = """|         _______  _______|
+|\     /|(  ____ \(  ___  )
+| )   ( || (    \/| (   ) |
+| |   | || (      | |   | |
+| |   | || (__    | |   | |
+| |   | ||  __)   | |   | |
+| |   | || (      | |   | |
+| (___) || )      | (___) |
+(_______)|/.......(_______)"""
+
+BOSS = BOSS.split("\n")
+BOSS_WIDTH = 27
+BOSS_HEIGHT = 9
+BOSS_HEALTH = 10
+BOSS_BRICK1 = 5
+BOSS_BRICK2 = 2
+BOSS_LEVEL = 3
+BOSS_Y = 9
+BOSS_COLOR = Back.WHITE + Fore.BLUE
+
+BOSS_BOMB_TIMEOUT = 5
+BOMB_VEL = 1
+BOMB_Y = BOSS_Y + BOSS_HEIGHT//2
+BOMB_CHAR = "B"
+BOMB_COLOR = Back.RED + Fore.YELLOW

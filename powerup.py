@@ -20,7 +20,7 @@ class PowerUp:
     def unpower():
         print("Power Up De-activated")
 
-    def move(self, paddle):
+    def oldmove(self, paddle):
         ret_val = 0
         next_y = self.y + POWER_VEL
 
@@ -34,7 +34,7 @@ class PowerUp:
 
         return ret_val
 
-    def newmove(self, paddle, bricks):
+    def move(self, paddle):
         ret_val = 0
         collision = True
         cur_ball = Point(self.x, self.y)
