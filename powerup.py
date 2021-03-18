@@ -219,3 +219,22 @@ class ShootingPaddle(PowerUp):
     @staticmethod
     def unpower(paddle, balls):
         paddle.is_shooter = False
+
+class FireBall(PowerUp):
+
+    def __init__(self, brick, ball):
+        super().__init__(brick, ball)
+        self.char = "Y"
+        self.color = POWER_COLOR["FireBall"]
+
+    @staticmethod
+    def power(paddle, balls):
+        for ball in balls:
+            ball.is_fireball = True
+        return True
+
+    @staticmethod
+    def unpower(paddle, balls):
+        for ball in balls:
+            ball.is_fireball = False
+        paddle.is_shooter = False

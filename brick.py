@@ -12,9 +12,10 @@ class Brick:
         self.char = BRICK_CHAR[index]
         self.color = BRICK_COLOR[index]
         self.break_score = BRICK_BREAK_SCORE[index]
+        self.is_fireballed = False
 
     def random_powers(self, ball):
-        val = random.randint(1, 7)
+        val = random.randint(1, 8)
         if val == 1:
             return ExpandPaddle(self, ball)
         elif val == 2:
@@ -27,8 +28,10 @@ class Brick:
             return ThruBall(self, ball)
         elif val == 6:
             return PaddleGrab(self, ball)
-        else:
+        elif val == 7:
             return ShootingPaddle(self, ball)
+        else:
+            return FireBall(self, ball)
 
     @staticmethod
     def sort_bricks(collided_bricks, cur_ball):

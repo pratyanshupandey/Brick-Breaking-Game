@@ -72,7 +72,7 @@ class Bullet:
                         no_exploding_brick = True
                         for j in range(len(bricks)):
                             if bricks[j].strength != 0 and abs(brick.y - bricks[j].y) <= 1 and abs(
-                                    brick.x - bricks[j].x) == BRICK_LEN:
+                                    brick.x - bricks[j].x) <= BRICK_LEN:
                                 bricks[j].strength = 0
                     bricks.remove(brick)
 

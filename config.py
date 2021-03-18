@@ -54,7 +54,8 @@ POWER_COLOR = {
     'FastBall': Back.BLACK + Fore.YELLOW,
     'ThruBall': Back.CYAN + Fore.YELLOW,
     'PaddleGrab': Back.MAGENTA + Fore.YELLOW,
-    'ShootingPaddle': Back.WHITE + Fore.YELLOW
+    'ShootingPaddle': Back.WHITE + Fore.YELLOW,
+    'FireBall': Back.WHITE + Fore.YELLOW
 }
 GRAVITY = 0.25
 POWER_VEL_CAP = 1.5

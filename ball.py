@@ -12,6 +12,7 @@ class Ball:
         self.x_velocity = self.offset * BALL_VEL
         self.y_velocity = -1 * BALL_VEL
         self.strength = 1
+        self.is_fireball = True
 
     def move(self, paddle, bricks, boss, level):
         old_ball = deepcopy(self)
@@ -126,6 +127,9 @@ class Ball:
                         brick.fix()
                     else:
                         brick.strength -= self.strength
+                    if self.is_fireball:
+                        brick.strength = 0
+                        brick.is_fireballed = True
 
                     if brick.strength <= 0:
                         pass
@@ -173,11 +177,11 @@ class Ball:
                             score += brick.break_score
                             if random.randint(1, POWER_CHANCES) == 1:
                                 new_powers.append(brick.random_powers(old_ball))
-                            if isinstance(brick, ExplodingBrick):
+                            if isinstance(brick, ExplodingBrick) or brick.is_fireballed:
                                 no_exploding_brick = True
                                 for j in range(len(bricks)):
                                     if bricks[j].strength != 0 and abs(brick.y - bricks[j].y) <= 1 and abs(
-                                            brick.x - bricks[j].x) == BRICK_LEN:
+                                            brick.x - bricks[j].x) <= BRICK_LEN:
                                         bricks[j].strength = 0
                             bricks.remove(brick)
 
