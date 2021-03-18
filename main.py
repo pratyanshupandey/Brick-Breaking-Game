@@ -1,5 +1,9 @@
 from screen import *
-
+import playsound
+import os
+path = "sad_trom.m4a"
+# os.system("ffplay -nodisp -autoexit -loglevel quiet " + path + " &")
+os.system("aplay -q taunt.wav > /dev/null &")
 while True:
 
     print("\nIN GAME INSTRUCTIONS")
