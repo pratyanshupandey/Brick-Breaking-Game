@@ -17,16 +17,16 @@ def load_layout(layout):
 def brick_layout1():
     bricks = []
     for i in range(15, 100, BRICK_LEN):
-        bricks.append(RainbowBrick(i, 13))
+        bricks.append(RainbowBrick(i, 14))
     j = 0
     for i in range(15, 100, BRICK_LEN):
         j += 1
         if j % 3 == 0:
-            bricks.append(OneHitBrick(i, 14))
+            bricks.append(OneHitBrick(i, 13))
         elif j % 3 == 1:
-            bricks.append(TwoHitBrick(i, 14))
+            bricks.append(TwoHitBrick(i, 13))
         else:
-            bricks.append(ThreeHitBrick(i, 14))
+            bricks.append(ThreeHitBrick(i, 13))
     return bricks
 
 
