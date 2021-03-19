@@ -37,8 +37,6 @@ class Game:
             # 1 no ball left
             # 2 next level skip
             self.start_time = time()
-            if self.level == BOSS_LEVEL:
-                self.bricks = []
             val = self.loop()
             if val == -1:
                 break
@@ -212,9 +210,10 @@ class Game:
 
         # Printing boss of boss level
         if self.level == BOSS_LEVEL:
-            for x in range(self.boss.x - BOSS_WIDTH // 2, self.boss.x + BOSS_WIDTH // 2 + 1):
+            boss_x = round(self.boss.x)
+            for x in range(boss_x - BOSS_WIDTH // 2, boss_x + BOSS_WIDTH // 2 + 1):
                 for y in range(self.boss.y - BOSS_HEIGHT // 2, self.boss.y + BOSS_HEIGHT // 2 + 1):
-                    self.grid[y][x] = BOSS_COLOR + BOSS[y - (self.boss.y - BOSS_HEIGHT // 2)][x - (self.boss.x - BOSS_WIDTH // 2)]
+                    self.grid[round(y)][round(x)] = BOSS_COLOR + BOSS[y - (self.boss.y - BOSS_HEIGHT // 2)][x - (boss_x - BOSS_WIDTH // 2)]
 
         # Printing Balls
         for ball in self.balls:

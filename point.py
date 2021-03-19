@@ -93,6 +93,7 @@ class Point:
     #       2           0 = No intersection
     @staticmethod
     def rect_intersection(cur_ball, next_ball, brick_left, brick_right, height=0):
+        # file = open("log.txt", "a")
 
         right_wall_top = Point(brick_right.x, brick_right.y - height//2 - 0.5)
         right_wall_bottom = Point(brick_right.x, brick_right.y + height//2 + 0.5)
@@ -105,6 +106,10 @@ class Point:
         top = Point.is_intersecting(cur_ball, next_ball, right_wall_top, left_wall_top)
         bottom = Point.is_intersecting(cur_ball, next_ball, left_wall_bottom, right_wall_bottom)
 
+        # file.write("{} {} {} {}\n".format(right_wall_top.x, right_wall_top.y, right_wall_bottom.x, right_wall_bottom.y))
+        # file.write("{} {} {} {}\n".format(cur_ball.x, cur_ball.y, next_ball.x, next_ball.y))
+        # file.write("{} {} {} {}\n\n".format(left,right,top,bottom))
+        # file.close()
         if left and cur_ball.x < brick_left.x:
             return 1
         if right and cur_ball.x > brick_right.x:

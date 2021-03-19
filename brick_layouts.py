@@ -2,6 +2,8 @@ from brick import *
 
 
 def load_layout(layout):
+    if layout == BOSS_LEVEL:
+        return []
     if layout == 1:
         return brick_layout1()
     elif layout == 2:
