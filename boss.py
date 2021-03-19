@@ -27,3 +27,8 @@ class Boss:
             self.last_bomb = time()
             return Bomb(self.x)
         return None
+
+    def before_brick(self, ball, brick):
+        if ball.y_velocity > 0:
+            return True
+        return False

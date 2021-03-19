@@ -32,11 +32,13 @@ class Game:
         self.start_time = time()
 
     def start(self):
+        total_time = 0
         while self.lives > 0 and self.level < 5:
             # -1 quit game
             # 0 all bricks done
             # 1 no ball left
             # 2 next level skip
+            total_time += time() - self.start_time
             self.start_time = time()
             val = self.loop()
             if val == -1:
@@ -55,7 +57,7 @@ class Game:
             self.paddle = Paddle()
             self.bullets = []
 
-        return self.score, int(time() - self.start_time)
+        return self.score, int(total_time)
 
     def loop(self):
 
@@ -101,6 +103,7 @@ class Game:
                     self.bombs.remove(bomb)
                 elif val == 1:
                     self.lives -= 1
+                    play_music("LifeLost")
                     self.bombs.remove(bomb)
                 else:
                     pass
@@ -173,6 +176,8 @@ class Game:
                 return 0
             elif len(self.balls) == 0:
                 return 1
+            elif self.lives <= 0:
+                return -1
 
             self.create_grid()
             self.print_grid()

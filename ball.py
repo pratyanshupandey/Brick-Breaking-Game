@@ -123,7 +123,7 @@ class Ball:
                         collider = boss
                     elif not boss_collision:
                         collider = col_brick
-                    elif self.x_velocity > 0 and boss_left.x < col_brick.x - col_brick.length // 2 - 0.5:
+                    elif boss.before_brick(cur_ball, col_brick):
                         collider = boss
                     else:
                         collider = col_brick
