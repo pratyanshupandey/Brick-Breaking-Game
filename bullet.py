@@ -1,5 +1,4 @@
 from config import *
-import random
 from point import Point
 from brick import ExplodingBrick, Brick, RainbowBrick
 

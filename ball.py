@@ -1,6 +1,8 @@
 from point import *
 from brick import *
 from copy import deepcopy
+from music import play_music
+
 
 class Ball:
 
@@ -15,10 +17,11 @@ class Ball:
         self.is_fireball = False
 
     @staticmethod
-    def in_boss(cur_ball,next_ball, boss):
+    def in_boss(cur_ball, next_ball, boss):
         boss_left = Point(boss.x - BOSS_WIDTH // 2 - 0.5, boss.y)
         boss_right = Point(boss.x + BOSS_WIDTH // 2 + 0.5, boss.y)
-        if boss_left.x <= cur_ball.x <= boss_right.x and (boss.y - BOSS_HEIGHT // 2 - 0.5) <= cur_ball.y <= (boss.y + BOSS_HEIGHT // 2 + 0.5):
+        if boss_left.x <= cur_ball.x <= boss_right.x and (boss.y - BOSS_HEIGHT // 2 - 0.5) <= cur_ball.y <= (
+                boss.y + BOSS_HEIGHT // 2 + 0.5):
             if boss_left.x <= next_ball.x <= boss_right.x and (boss.y - BOSS_HEIGHT // 2 - 0.5) <= next_ball.y <= (
                     boss.y + BOSS_HEIGHT // 2 + 0.5):
                 return True
@@ -26,7 +29,7 @@ class Ball:
                 return False
         return False
 
-    def move(self, paddle, bricks, boss, level):
+    def move(self, paddle, bricks, boss, level, mode):
         old_ball = deepcopy(self)
         paddle_collision = False
         ret_val = True
@@ -49,7 +52,8 @@ class Ball:
                 paddle_left = Point(paddle.x - paddle.length // 2 - 0.5, paddle.y - 0.5)
                 paddle_right = Point(paddle.x + paddle.length // 2 + 0.5, paddle.y - 0.5)
 
-                if Point.is_intersecting(cur_ball, next_ball, paddle_left, paddle_right) and cur_ball.y != paddle_left.y:
+                if Point.is_intersecting(cur_ball, next_ball, paddle_left,
+                                         paddle_right) and cur_ball.y != paddle_left.y:
                     collision = True
                     paddle_collision = True
                     intersect = Point.find_intersect_y(cur_ball, next_ball, paddle.y)
@@ -94,32 +98,9 @@ class Ball:
                     boss_left = Point(boss.x - BOSS_WIDTH // 2 - 0.5, boss.y)
                     boss_right = Point(boss.x + BOSS_WIDTH // 2 + 0.5, boss.y)
                     val = Point.rect_intersection(cur_ball, next_ball, boss_left, boss_right, BOSS_HEIGHT)
-                    if val != 0 or Ball.in_boss(cur_ball, next_ball,boss):
+                    if val != 0 or Ball.in_boss(cur_ball, next_ball, boss):
                         collision = True
                         boss_collision = True
-                #     boss.strength -= 1
-                    # if val == 1:
-                    #     self.v_reflection(boss_left.x, next_ball)
-                    #     cur_ball.x = boss_left.x
-                    #     cur_ball.y = Point.find_intersect_x(cur_ball, next_ball, cur_ball.x)
-                    #
-                    # elif val == 2:
-                    #     self.h_reflection(boss.y + BOSS_HEIGHT//2 + 0.5, next_ball)
-                    #     cur_ball.y = boss.y + 0.5
-                    #     cur_ball.x = Point.find_intersect_y(cur_ball, next_ball, cur_ball.y)
-                    #
-                    # elif val == 3:
-                    #     self.v_reflection(boss_right.x, next_ball)
-                    #     cur_ball.x = boss_right.x
-                    #     cur_ball.y = Point.find_intersect_x(cur_ball, next_ball, cur_ball.x)
-                    #
-                    # elif val == 4:
-                    #     self.h_reflection(boss.y - BOSS_HEIGHT//2 - 0.5, next_ball)
-                    #     cur_ball.y = boss.y - 0.5
-                    #     cur_ball.x = Point.find_intersect_y(cur_ball, next_ball, cur_ball.y)
-                    #
-                    # else:
-                    #     pass
 
                 # Collision with bricks
                 collided_bricks = []
@@ -201,10 +182,10 @@ class Ball:
                         boss_left = Point(boss.x - BOSS_WIDTH // 2 - 0.5, boss.y)
                         boss_right = Point(boss.x + BOSS_WIDTH // 2 + 0.5, boss.y)
 
-                        if Ball.in_boss(cur_ball, next_ball,boss):
+                        if Ball.in_boss(cur_ball, next_ball, boss):
                             # file = open("log.txt", "a")
                             # file.write("In {} {} {} {}\n".format(cur_ball.x, cur_ball.y, next_ball.x, next_ball.y))
-                            prev_ball = Point(2 * cur_ball.x - next_ball.x,2 * cur_ball.y - next_ball.y)
+                            prev_ball = Point(2 * cur_ball.x - next_ball.x, 2 * cur_ball.y - next_ball.y)
                             if next_ball.x == cur_ball.x:
                                 next_ball.x += 1
                                 if cur_ball.x > boss.x:
@@ -225,7 +206,7 @@ class Ball:
                             cur_ball.y = Point.find_intersect_x(cur_ball, next_ball, cur_ball.x)
 
                         elif val == 2:
-                            self.h_reflection(boss.y + BOSS_HEIGHT//2 + 0.5, next_ball)
+                            self.h_reflection(boss.y + BOSS_HEIGHT // 2 + 0.5, next_ball)
                             cur_ball.y = boss.y + 0.5
                             cur_ball.x = Point.find_intersect_y(cur_ball, next_ball, cur_ball.y)
 
@@ -235,7 +216,7 @@ class Ball:
                             cur_ball.y = Point.find_intersect_x(cur_ball, next_ball, cur_ball.x)
 
                         elif val == 4:
-                            self.h_reflection(boss.y - BOSS_HEIGHT//2 - 0.5, next_ball)
+                            self.h_reflection(boss.y - BOSS_HEIGHT // 2 - 0.5, next_ball)
                             cur_ball.y = boss.y - 0.5
                             cur_ball.x = Point.find_intersect_y(cur_ball, next_ball, cur_ball.y)
 
@@ -262,6 +243,11 @@ class Ball:
 
             self.x = next_ball.x
             self.y = next_ball.y
+        if mode == "Easy":
+            if self.x_velocity < 0:
+                self.x_velocity = max(self.x_velocity, -1 * X_CAPPED_VEL)
+            else:
+                self.x_velocity = min(self.x_velocity, X_CAPPED_VEL)
 
         return ret_val, score, new_powers, paddle_collision
 

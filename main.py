@@ -1,9 +1,5 @@
 from screen import *
-import playsound
-import os
-path = "sad_trom.m4a"
-# os.system("ffplay -nodisp -autoexit -loglevel quiet " + path + " &")
-# os.system("aplay -q taunt.wav > /dev/null &")
+
 while True:
 
     print("\nIN GAME INSTRUCTIONS")
@@ -18,7 +14,7 @@ while True:
 
     val = input("Option: ")
     if val == 'p':
-            Game.run_game()
+        Game.run_game()
     elif val == 'q':
         break
     else:

@@ -203,6 +203,7 @@ class PaddleGrab(PowerUp):
     def unpower(paddle, balls):
         paddle.is_sticky = False
 
+
 class ShootingPaddle(PowerUp):
 
     def __init__(self, brick, ball):
@@ -219,6 +220,7 @@ class ShootingPaddle(PowerUp):
     @staticmethod
     def unpower(paddle, balls):
         paddle.is_shooter = False
+
 
 class FireBall(PowerUp):
 

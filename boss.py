@@ -9,6 +9,7 @@ class Boss:
         self.y = BOSS_Y
         self.strength = BOSS_HEALTH
         self.last_bomb = time()
+        self.brick_left = 2
 
     def move(self, paddle):
         if self.x == paddle.x:

@@ -63,9 +63,16 @@ def brick_layout3():
         bricks.append(UnbreakableBrick(i, 12))
     return bricks
 
+
 def boss_brick_1():
-    return [OneHitBrick(30,BOMB_Y + 1)]
+    bricks = []
+    for i in range(1 + BRICK_LEN//2, SCREEN_COLS - SCREEN_COLS % BRICK_LEN, BRICK_LEN):
+        bricks.append(OneHitBrick(i, BOMB_Y + 1))
+    return bricks
 
 
 def boss_brick_2():
-    return [OneHitBrick(10,BOMB_Y + 2)]
+    bricks = []
+    for i in range(1 + BRICK_LEN//2, SCREEN_COLS - SCREEN_COLS % BRICK_LEN, BRICK_LEN):
+        bricks.append(TwoHitBrick(i, BOMB_Y + 2))
+    return bricks

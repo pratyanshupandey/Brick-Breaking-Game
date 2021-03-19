@@ -3,17 +3,18 @@ from ball import Ball
 from point import *
 from input import get_input
 from bullet import *
-from time import time
 from boss import Boss
 from brick_layouts import *
 from powerup import *
 import termios
 import sys
+from music import play_music
 from colorama import init, deinit, Style
 
 
 class Game:
-    def __init__(self):
+    def __init__(self, mode):
+        self.mode = mode
         self.boss = Boss()
         self.paddle = Paddle()
         self.balls = [Ball()]
@@ -31,8 +32,8 @@ class Game:
         self.start_time = time()
 
     def start(self):
-        while self.lives > 0 and self.level < 4:
-            # -1 quitgame
+        while self.lives > 0 and self.level < 5:
+            # -1 quit game
             # 0 all bricks done
             # 1 no ball left
             # 2 next level skip
@@ -104,11 +105,11 @@ class Game:
                 else:
                     pass
 
-
             # Moving Balls, Checking Collisions and Creating Powers
             paddle_collision = False
             for ball in self.balls:
-                is_ball, add_score, new_powers, paddle_col = ball.move(self.paddle, self.bricks, self.boss, self.level)
+                is_ball, add_score, new_powers, paddle_col = ball.move(self.paddle, self.bricks, self.boss, self.level,
+                                                                       self.mode)
                 paddle_collision |= paddle_col
                 if not is_ball:
                     self.balls.remove(ball)
@@ -158,10 +159,12 @@ class Game:
                     if brick.y >= SCREEN_ROWS - PAD_VER_OFF:
                         return -1
 
-            if self.level == BOSS_LEVEL and self.boss.strength == BOSS_BRICK1:
-                self.bricks = boss_brick_1()
-            if self.level == BOSS_LEVEL and self.boss.strength == BOSS_BRICK2:
+            if self.level == BOSS_LEVEL and self.boss.strength == BOSS_BRICK1 and self.boss.brick_left == 2:
+                self.bricks.extend(boss_brick_1())
+                self.boss.brick_left -= 1
+            if self.level == BOSS_LEVEL and self.boss.strength == BOSS_BRICK2 and self.boss.brick_left == 1:
                 self.bricks.extend(boss_brick_2())
+                self.boss.brick_left -= 1
 
             if self.level != BOSS_LEVEL and Brick.br_count(self.bricks) == 0:
                 return 0
@@ -173,7 +176,6 @@ class Game:
 
             self.create_grid()
             self.print_grid()
-
 
     def create_grid(self):
         self.grid = []
@@ -203,8 +205,8 @@ class Game:
         for i in range(paddle_left, paddle_right + 1):
             self.grid[self.paddle.y][i] = PADDLE_COLOR + PAD_CHAR
         if self.paddle.is_shooter:
-            self.grid[self.paddle.y-1][paddle_left] = SHOOTING_PADDLE_AUG + PADDLE_COLOR
-            self.grid[self.paddle.y-1][paddle_right] = SHOOTING_PADDLE_AUG + PADDLE_COLOR
+            self.grid[self.paddle.y - 1][paddle_left] = SHOOTING_PADDLE_AUG + PADDLE_COLOR
+            self.grid[self.paddle.y - 1][paddle_right] = SHOOTING_PADDLE_AUG + PADDLE_COLOR
 
         # Printing Bullets
         for bullet in self.bullets:
@@ -219,12 +221,15 @@ class Game:
             boss_x = round(self.boss.x)
             for x in range(boss_x - BOSS_WIDTH // 2, boss_x + BOSS_WIDTH // 2 + 1):
                 for y in range(self.boss.y - BOSS_HEIGHT // 2, self.boss.y + BOSS_HEIGHT // 2 + 1):
-                    self.grid[round(y)][round(x)] = BOSS_COLOR + BOSS[y - (self.boss.y - BOSS_HEIGHT // 2)][x - (boss_x - BOSS_WIDTH // 2)]
+                    self.grid[round(y)][round(x)] = BOSS_COLOR + BOSS[y - (self.boss.y - BOSS_HEIGHT // 2)][
+                        x - (boss_x - BOSS_WIDTH // 2)]
 
         # Printing Balls
         for ball in self.balls:
-            self.grid[round(ball.y)][round(ball.x)] = BALL_COLOR + BALL_CHAR
-
+            if ball.is_fireball:
+                self.grid[round(ball.y)][round(ball.x)] = FIRE_BALL_COLOR + BALL_CHAR
+            else:
+                self.grid[round(ball.y)][round(ball.x)] = BALL_COLOR + BALL_CHAR
 
         # Printing Bricks
         for brick in self.bricks:
@@ -251,9 +256,13 @@ class Game:
 
         score_line = [SCREEN_BORDER + "|"]
         if self.level != BOSS_LEVEL:
-            score_str = "  SCORE = {}   TIME = {}   LIVES = {}   LEVEL = {}  FALLING TIMEOUT = {}".format(self.score, tim, self.lives, self.level, FALLING_BRICKS_TIMEOUT[self.level] - tim if FALLING_BRICKS_TIMEOUT[self.level] - tim > 0 else "ACTIVATED")
+            score_str = "  SCORE = {}   TIME = {}   LIVES = {}   LEVEL = {}  FALLING TIMEOUT = {}" \
+                .format(self.score, tim, self.lives, self.level,
+                        FALLING_BRICKS_TIMEOUT[self.level] - tim
+                        if FALLING_BRICKS_TIMEOUT[self.level] - tim > 0 else "ACTIVATED")
         else:
-            score_str = "  SCORE = {}   TIME = {}   LIVES = {}   LEVEL = BOSS  BOSS HEALTH = {}".format(self.score, tim, self.lives, "".join([BOSS_HEALTH_CHAR for i in range(self.boss.strength)]))
+            score_str = "  SCORE = {}   TIME = {}   LIVES = {}   LEVEL = BOSS  BOSS HEALTH = {}" \
+                .format(self.score, tim, self.lives, "".join([BOSS_HEALTH_CHAR for _ in range(self.boss.strength)]))
 
         for i in range(SCREEN_COLS - 2 - len(score_str)):
             score_str += " "
@@ -276,8 +285,17 @@ class Game:
         score = None
         tim = None
         try:
+            print("\n")
+            print("Easy Mode: Velocity of ball is capped")
+            print("Difficult Mode: Velocity of ball is uncapped")
+            print("Press e for Easy and anything else for difficult and ENTER")
+            inp = input("Difficulty Level: ")
+            if inp == "e":
+                mode = "Easy"
+            else:
+                mode = "Difficult"
             init()
-            game = Game()
+            game = Game(mode)
             clear_screen()
             score, tim = game.start()
 
