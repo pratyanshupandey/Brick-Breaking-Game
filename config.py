@@ -32,7 +32,7 @@ PADDLE_COLOR = Back.GREEN + Fore.RED + Style.DIM
 SHOOTING_PADDLE_AUG = "|"
 
 # Brick Info
-FALLING_BRICKS_TIMEOUT = [50, 50, 50, 50]
+FALLING_BRICKS_TIMEOUT = [100, 100, 150, 150]
 BRICK_LEN = 7
 BRICK_STRENGTH = [1, 2, 3, MAX_BALL_STRENGTH - 1, 1]
 BRICK_BREAK_SCORE = [10, 30, 100, 200, 30]
@@ -55,8 +55,8 @@ POWER_COLOR = {
     'FastBall': Back.BLACK + Fore.YELLOW,
     'ThruBall': Back.CYAN + Fore.YELLOW,
     'PaddleGrab': Back.MAGENTA + Fore.YELLOW,
-    'ShootingPaddle': Back.WHITE + Fore.YELLOW,
-    'FireBall': Back.WHITE + Fore.YELLOW
+    'ShootingPaddle': Back.LIGHTBLUE_EX + Fore.YELLOW,
+    'FireBall': Back.LIGHTCYAN_EX + Fore.YELLOW
 }
 GRAVITY = 0.25
 POWER_VEL_CAP = 1.5

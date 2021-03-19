@@ -91,10 +91,13 @@ class Game:
 
             # Bullets
             for bullet in self.bullets:
-                ret_val, score = bullet.move(self.bricks)
+                ret_val, score, new_powers = bullet.move(self.bricks)
                 if ret_val == -1:
                     self.bullets.remove(bullet)
                 self.score += score
+                if self.level != BOSS_LEVEL:
+                    for power in new_powers:
+                        self.visible_powers.append(power)
 
             # handling bombs of boss level
             for bomb in self.bombs:
@@ -152,7 +155,11 @@ class Game:
 
             for start_time, power in self.active_powers:
                 if time() - start_time >= POWER_TIMEOUT:
-                    power.unpower(self.paddle, self.balls)
+                    for _, pow in self.active_powers:
+                        if pow != power and type(pow) is type(power):
+                            break
+                    else:
+                        power.unpower(self.paddle, self.balls)
                     self.active_powers.remove((start_time, power))
 
             if self.level != BOSS_LEVEL and time() - self.start_time > FALLING_BRICKS_TIMEOUT[self.level]:

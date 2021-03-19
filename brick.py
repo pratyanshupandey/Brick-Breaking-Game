@@ -16,6 +16,7 @@ class Brick:
 
     def random_powers(self, ball):
         val = random.randint(1, 8)
+        val = random.choice([7,8])
         if val == 1:
             return ExpandPaddle(self, ball)
         elif val == 2:

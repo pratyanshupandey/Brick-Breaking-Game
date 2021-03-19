@@ -1,6 +1,8 @@
 from config import *
 from point import Point
 from brick import ExplodingBrick, Brick, RainbowBrick
+import random
+
 
 
 class Bullet:
@@ -22,13 +24,13 @@ class Bullet:
 
         # Collision with walls
         if next_bullet.x <= 0.5:
-            return -1, 0
+            return -1, 0, []
         if next_bullet.x >= SCREEN_COLS - 1.5:
-            return -1, 0
+            return -1, 0, []
         if next_bullet.y <= UPPER_WALL + 0.5:
-            return -1, 0
+            return -1, 0, []
         if next_bullet.y >= SCREEN_ROWS - 1:
-            return -1, 0
+            return -1, 0, []
 
         # Collision with bricks
         collided_bricks = []
@@ -62,11 +64,14 @@ class Bullet:
 
         # Creating powers from exploded bricks
         no_exploding_brick = True
+        new_powers = []
         while no_exploding_brick:
             no_exploding_brick = False
             for brick in bricks:
                 if brick.strength <= 0:
                     score += brick.break_score
+                    if random.randint(1, POWER_CHANCES) == 1:
+                        new_powers.append(brick.random_powers(self))
                     if isinstance(brick, ExplodingBrick):
                         no_exploding_brick = True
                         for j in range(len(bricks)):
@@ -78,7 +83,7 @@ class Bullet:
         self.x = next_bullet.x
         self.y = next_bullet.y
 
-        return ret_val, score
+        return ret_val, score, new_powers
 
     def h_reflection(self, y, next_bullet):
         self.y_velocity = -1 * self.y_velocity
