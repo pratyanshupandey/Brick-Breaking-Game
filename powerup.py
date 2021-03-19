@@ -97,6 +97,11 @@ class ExpandPaddle(PowerUp):
     @staticmethod
     def power(paddle, balls):
         paddle.length += PAD_LEN_EXTENSION
+
+        if paddle.x - paddle.length // 2 <= 0:
+            paddle.x = 1 + paddle.length // 2
+        if paddle.x + paddle.length // 2 >= SCREEN_COLS - 1:
+            paddle.x = SCREEN_COLS - 2 - paddle.length // 2
         return True
 
     @staticmethod
