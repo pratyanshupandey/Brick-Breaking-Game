@@ -1,4 +1,5 @@
 from colorama import Fore, Back, Style
+from music import play_music
 
 # Screen Info
 SCREEN_BG = Back.WHITE
@@ -93,3 +94,5 @@ BOMB_VEL = 1
 BOMB_Y = BOSS_Y + BOSS_HEIGHT//2
 BOMB_CHAR = "B"
 BOMB_COLOR = Back.RED + Fore.YELLOW
+BOSS_SCORE = 1000
+

@@ -12,7 +12,7 @@ class Ball:
         self.x_velocity = self.offset * BALL_VEL
         self.y_velocity = -1 * BALL_VEL
         self.strength = 1
-        self.is_fireball = True
+        self.is_fireball = False
 
     @staticmethod
     def in_boss(cur_ball,next_ball, boss):
@@ -137,6 +137,7 @@ class Ball:
                     col_brick = Brick.sort_bricks(collided_bricks, self)
 
                 if col_brick is not None or boss_collision:
+                    play_music("collision")
                     if col_brick is None:
                         collider = boss
                     elif not boss_collision:
@@ -251,6 +252,7 @@ class Ball:
                             if random.randint(1, POWER_CHANCES) == 1:
                                 new_powers.append(brick.random_powers(old_ball))
                             if isinstance(brick, ExplodingBrick) or brick.is_fireballed:
+                                play_music("Explosion")
                                 no_exploding_brick = True
                                 for j in range(len(bricks)):
                                     if bricks[j].strength != 0 and abs(brick.y - bricks[j].y) <= 1 and abs(

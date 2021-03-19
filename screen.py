@@ -42,9 +42,11 @@ class Game:
                 break
             elif val == 0 or val == 2:
                 self.level += 1
+                play_music("NewLevel")
                 self.bricks = load_layout(self.level)
             elif val == 1:
                 self.lives -= 1
+                play_music("LifeLost")
 
             self.balls = [Ball()]
             self.visible_powers = []
@@ -114,11 +116,14 @@ class Game:
                 if self.level != BOSS_LEVEL:
                     for power in new_powers:
                         self.visible_powers.append(power)
+            if paddle_collision:
+                play_music("collision")
 
             # Managing Powers
             for power in self.visible_powers:
                 val = power.move(self.paddle)
                 if val == 1:
+                    play_music("PowerupCatch")
                     if isinstance(power, BallMultiplier):
                         self.balls = power.power(self.paddle, self.balls)
                     elif power.power(self.paddle, self.balls):
@@ -161,6 +166,7 @@ class Game:
             if self.level != BOSS_LEVEL and Brick.br_count(self.bricks) == 0:
                 return 0
             if self.level == BOSS_LEVEL and self.boss.strength == 0:
+                self.score += BOSS_SCORE
                 return 0
             elif len(self.balls) == 0:
                 return 1
@@ -283,6 +289,7 @@ class Game:
             print(Style.RESET_ALL)
             deinit()
             if score is not None and tim is not None:
+                play_music("GameOver")
                 print("\n\n\n\n\n\n")
                 print("\t\tTotal Score = {}".format(score))
                 print("\t\tTotal Time = {}".format(tim))
